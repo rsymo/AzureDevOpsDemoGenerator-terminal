@@ -1,0 +1,2209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E1796A5C-DA7B-4077-86F3-B2C8626257B7}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VstsDemoBuilder</RootNamespace>
+    <AssemblyName>VstsDemoBuilder</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
+    <ApplicationInsightsResourceId>/subscriptions/f74e6a4f-08cd-4e93-968f-6618f41c4531/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/VstsDemoBuilder</ApplicationInsightsResourceId>
+    <Use64BitIISExpress />
+    <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.3.1.7705, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.3.0\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleAnalyticsTracker.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=04ab204e84b117c0, processorArchitecture=MSIL">
+      <HintPath>..\packages\GoogleAnalyticsTracker.Core.5.0.0\lib\portable45-net45+win8+wpa81\GoogleAnalyticsTracker.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleAnalyticsTracker.Simple, Version=5.0.0.0, Culture=neutral, PublicKeyToken=04ab204e84b117c0, processorArchitecture=MSIL">
+      <HintPath>..\packages\GoogleAnalyticsTracker.Simple.5.0.0\lib\portable45-net45+win8+wpa81\GoogleAnalyticsTracker.Simple.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleAnalyticsTracker.WebAPI2, Version=5.0.0.0, Culture=neutral, PublicKeyToken=04ab204e84b117c0, processorArchitecture=MSIL">
+      <HintPath>..\packages\GoogleAnalyticsTracker.WebAPI2.5.0.0\lib\net45\GoogleAnalyticsTracker.WebAPI2.dll</HintPath>
+    </Reference>
+    <Reference Include="LaunchDarkly.Client, Version=5.4.0.0, Culture=neutral, PublicKeyToken=f86add69004e6885, processorArchitecture=MSIL">
+      <HintPath>..\packages\LaunchDarkly.Client.5.4.0\lib\net45\LaunchDarkly.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="LaunchDarkly.Common.StrongName, Version=1.1.1.0, Culture=neutral, PublicKeyToken=45ef1738a929a7df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LaunchDarkly.Common.StrongName.1.1.1\lib\net45\LaunchDarkly.Common.StrongName.dll</HintPath>
+    </Reference>
+    <Reference Include="LaunchDarkly.EventSource, Version=3.1.5.0, Culture=neutral, PublicKeyToken=18e8c36453e3060f, processorArchitecture=MSIL">
+      <HintPath>..\packages\LaunchDarkly.EventSource.3.1.5\lib\net45\LaunchDarkly.EventSource.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="LowercaseRoutesMVC, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LowercaseRoutesMVC.1.0.3\lib\LowercaseRoutesMVC.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.1.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.1.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.1.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.1.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.1.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.1.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.13.5.907, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.5\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.13.5.907, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.13.5\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Mvc.4.0.1\lib\net45\Microsoft.Practices.Unity.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.ServiceBus.3.3.2\lib\net45-full\Microsoft.ServiceBus.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.Client.15.112.1\lib\net45\Microsoft.TeamFoundation.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.Client.Interactive, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.InteractiveClient.15.112.1\lib\net45\Microsoft.VisualStudio.Services.Client.Interactive.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.Client.15.112.1\lib\net45\Microsoft.VisualStudio.Services.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.ExtensionManagement.WebApi, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.ExtensionManagement.WebApi.15.112.1-preview\lib\net45\Microsoft.VisualStudio.Services.ExtensionManagement.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.Gallery.WebApi, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.Gallery.WebApi.15.112.1-preview\lib\net45\Microsoft.VisualStudio.Services.Gallery.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Services.WebApi, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.Services.Client.15.112.1\lib\net45\Microsoft.VisualStudio.Services.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.20622.1351, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Expressions.4.3.0\lib\net463\System.Linq.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Net.Sockets, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Sockets.4.3.0\lib\net46\System.Net.Sockets.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.4.3.0\lib\net463\System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization.Xml, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Xml.4.3.0\lib\net46\System.Runtime.Serialization.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.RegularExpressions.4.3.0\lib\net463\System.Text.RegularExpressions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.0.0\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Providers.Core.1.2\lib\net40\System.Web.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Abstractions, Version=4.1.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Abstractions.4.1.3\lib\net47\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.10.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Container.5.10.3\lib\net47\Unity.Container.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.3.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="App_Start\UnityMvcActivator.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Apis\ProjectController.cs" />
+    <Compile Include="Controllers\Apis\TemplateController.cs" />
+    <Compile Include="Controllers\EnvironmentController.cs" />
+    <Compile Include="Controllers\ExtractorController.cs" />
+    <Compile Include="Controllers\GitHubController.cs" />
+    <Compile Include="Controllers\SessonTimeoutAttribute.cs" />
+    <Compile Include="ErrorHandler\AiHandleErrorAttribute.cs" />
+    <Compile Include="Extensions\Extension.cs" />
+    <Compile Include="ExtractorModels\ExtractorAnalysis.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccessDetails.cs" />
+    <Compile Include="Models\Accounts.cs" />
+    <Compile Include="Models\CreateZips.cs" />
+    <Compile Include="Models\Default.cs" />
+    <Compile Include="Models\Email.cs" />
+    <Compile Include="Models\ErrorMessages.cs" />
+    <Compile Include="Models\GitHubAccessDetails.cs" />
+    <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\ProfileDetails.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\ProjectList.cs" />
+    <Compile Include="Models\Query.cs" />
+    <Compile Include="Models\ReadUser.cs" />
+    <Compile Include="Models\TemplateSelection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceInterfaces\IAccountService.cs" />
+    <Compile Include="ServiceInterfaces\IExtractorService.cs" />
+    <Compile Include="ServiceInterfaces\IProjectService.cs" />
+    <Compile Include="ServiceInterfaces\ITemplateService.cs" />
+    <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\ExtractorService.cs" />
+    <Compile Include="Services\ProjectService.cs" />
+    <Compile Include="Services\TemplateService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\css\custom.min.css" />
+    <Content Include="assets\images\error.png" />
+    <Content Include="assets\images\NotFound.png" />
+    <Content Include="assets\images\VSTS_cover_image_3.png" />
+    <Content Include="assets\images\VSTS_cover_image_5.png" />
+    <Content Include="assets\images\VSTS_cover_image_t.png" />
+    <Content Include="assets\images\VSTS_full_logo.png" />
+    <Content Include="assets\images\VS_logo.png" />
+    <Content Include="assets\images\VS_logo_1.png" />
+    <Content Include="assets\templategrouping\templategroup.custom.min.css" />
+    <Content Include="Content\assets\css\custom.min.css" />
+    <Content Include="Content\assets\images\VSTS-demoGen-image.png" />
+    <Content Include="Content\assets\images\VSTS-menu.svg" />
+    <Content Include="Content\assets\images\VSTS-user-image.svg" />
+    <Content Include="Content\assets\images\VSTS_cover_image.png" />
+    <Content Include="Content\assets\images\VSTS_full_logo.png" />
+    <Content Include="Content\assets\images\vsts_header_image.png" />
+    <Content Include="Content\assets\images\VS_logo.png" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\custome-style.css" />
+    <Content Include="Content\ddlStyle.css" />
+    <Content Include="Content\extractor\assets\css\custom.min.css" />
+    <Content Include="Content\extractor\assets\images\demoGenBG.png" />
+    <Content Include="Content\extractor\assets\images\demoGenBG_2.png" />
+    <Content Include="Content\extractor\assets\images\VSTS-demoGen-image.png" />
+    <Content Include="Content\extractor\assets\images\VSTS-menu.svg" />
+    <Content Include="Content\extractor\assets\images\VSTS-user-image.svg" />
+    <Content Include="Content\extractor\assets\images\VSTS_cover_image.png" />
+    <Content Include="Content\extractor\assets\images\VSTS_cover_image_2.png" />
+    <Content Include="Content\extractor\assets\images\VSTS_full_logo.png" />
+    <Content Include="Content\extractor\assets\images\vsts_header_image.png" />
+    <Content Include="Content\extractor\assets\images\VS_add.png" />
+    <Content Include="Content\extractor\assets\images\VS_delete.png" />
+    <Content Include="Content\extractor\assets\images\VS_edit.png" />
+    <Content Include="Content\extractor\assets\images\VS_import.png" />
+    <Content Include="Content\extractor\assets\images\VS_logo.png" />
+    <Content Include="Content\extractor\assets\images\VS_new.png" />
+    <Content Include="Content\extractor\assets\script\script.js" />
+    <Content Include="Content\Site.css" />
+    <Content Include="EmailTemplates\ErrorDetail.html" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Images\background-verify.png" />
+    <Content Include="Images\bg_new.png" />
+    <Content Include="Images\check-10.png" />
+    <Content Include="Images\check-10_new.png" />
+    <Content Include="Images\create_img_final1.png" />
+    <Content Include="Images\cross-10.png" />
+    <Content Include="Images\cross10_new.png" />
+    <Content Include="Images\enable_classic.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\facebook.png" />
+    <Content Include="Images\favicon.png" />
+    <Content Include="Images\github-icon.png" />
+    <Content Include="Images\GitHub-Mark.png" />
+    <Content Include="Images\image2.png" />
+    <Content Include="Images\img_verify2.jpg" />
+    <Content Include="Images\linkedin.png" />
+    <Content Include="Images\loader_trans_1.gif" />
+    <Content Include="Images\loading.gif" />
+    <Content Include="Images\loading_trans.gif" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Images\MSimgae.png" />
+    <Content Include="Images\next.png" />
+    <Content Include="Images\outlook.png" />
+    <Content Include="Images\sideImg.png" />
+    <Content Include="Scripts\AppScripts\GitHubAuth.js" />
+    <Content Include="PreSetting\CreateQueryFolder.json" />
+    <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\jquery-1.12.4.js" />
+    <Content Include="Scripts\jquery-1.12.4.min.js" />
+    <Content Include="Scripts\knockout-2.2.0.debug.js" />
+    <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Templates\DL-AKS\Images\AKS.png" />
+    <Content Include="Templates\DL-AKS\Images\aksdashboard.png" />
+    <Content Include="Templates\DL-AKS\Images\finalresult.png" />
+    <Content Include="Templates\DL-AKS\Images\updateprocessbd.png" />
+    <Content Include="Templates\DL-AKS\Images\update_CD3.png" />
+    <Content Include="Templates\DL-Ansible\Images\browseweb.png" />
+    <Content Include="Templates\DL-Ansible\Images\cd-queue.gif" />
+    <Content Include="Templates\DL-Ansible\Images\ci-queue.gif" />
+    <Content Include="Templates\DL-Ansible\Images\logintosite.png" />
+    <Content Include="Templates\DL-Ansible\Images\playbook.png" />
+    <Content Include="Templates\DL-AzureFunctions\Images\createfunctionapp.png" />
+    <Content Include="Templates\DL-AzureFunctions\Images\deploysite.png" />
+    <Content Include="Templates\DL-AzureFunctions\Images\projectcreation.png" />
+    <Content Include="Templates\DL-AzureFunctions\Images\pulwebsite.png" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Images\Overview.png" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Images\Website.PNG" />
+    <Content Include="Templates\DL-DeploymentGroups\Images\application.png" />
+    <Content Include="Templates\DL-DeploymentGroups\Images\dgscript.png" />
+    <Content Include="Templates\DL-DeploymentGroups\Images\differentphases.png" />
+    <Content Include="Templates\DL-Docker\Images\buildresult.png" />
+    <Content Include="Templates\DL-Docker\Images\buildtasks.png" />
+    <Content Include="Templates\DL-Docker\Images\finalresult.png" />
+    <Content Include="Templates\DL-Docker\Images\release.png" />
+    <Content Include="Templates\DL-LaunchDarkly\Images\browseapp.png" />
+    <Content Include="Templates\DL-LaunchDarkly\Images\buildandrelease.gif" />
+    <Content Include="Templates\DL-LaunchDarkly\Images\CD.png" />
+    <Content Include="Templates\DL-MachineLearning\Images\aml.png" />
+    <Content Include="Templates\DL-MachineLearning\Images\CI.png" />
+    <Content Include="Templates\DL-MachineLearning\Images\Items.png" />
+    <Content Include="Templates\DL-MachineLearning\Images\workflow.png" />
+    <Content Include="Templates\Gen-MyHealthClinic\Images\boards.png" />
+    <Content Include="Templates\Gen-MyHealthClinic\Images\CI.png" />
+    <Content Include="Templates\Gen-MyHealthClinic\Images\dashboard.png" />
+    <Content Include="Templates\Gen-MyHealthClinic\Images\site.png" />
+    <Content Include="Templates\Gen-MyShuttle\Images\boards.png" />
+    <Content Include="Templates\Gen-MyShuttle\Images\dashboard.png" />
+    <Content Include="Templates\Gen-MyShuttle\Images\loginpage.png" />
+    <Content Include="Templates\DL-Octopus\Images\AccountOctopusDeploy.png" />
+    <Content Include="Templates\DL-Octopus\Images\BuildAzureDevOpsServices1.png" />
+    <Content Include="Templates\DL-Octopus\Images\OctopusDeploy.png" />
+    <Content Include="Templates\DL-Octopus\Images\PartsUnlimited.png" />
+    <Content Include="Templates\Gen-PartsUnlimited\Images\boards.png" />
+    <Content Include="Templates\Gen-PartsUnlimited\Images\dashboard.png" />
+    <Content Include="Templates\Gen-PartsUnlimited\Images\pulwebsite.png" />
+    <Content Include="Templates\DL-PHP\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-PHP\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-PHP\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-PHP\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-PHP\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-Python\Images\build-progress.gif" />
+    <Content Include="Templates\DL-Python\Images\cd-tasks.png" />
+    <Content Include="Templates\DL-Python\Images\ci-pipeline.png" />
+    <Content Include="Templates\DL-Python\Images\release-output.gif" />
+    <Content Include="Templates\DL-Python\Images\release-progress.gif" />
+    <Content Include="Templates\DL-ReleaseGates\Images\qam.png" />
+    <Content Include="Templates\DL-ReleaseGates\Images\querywi.png" />
+    <Content Include="Templates\DL-ReleaseGates\Images\timeout.png" />
+    <Content Include="Templates\DL-Selenium\Images\Buildsuccess.png" />
+    <Content Include="Templates\DL-Selenium\Images\dev.png" />
+    <Content Include="Templates\DL-Selenium\Images\seleniumtest.png" />
+    <Content Include="Templates\DL-Selenium\Images\testsuccess.png" />
+    <Content Include="Templates\Gen-SmartHotel360\Images\dashboard.png" />
+    <Content Include="Templates\Gen-SmartHotel360\Images\Diagram.png" />
+    <Content Include="Templates\Gen-SmartHotel360\Images\Screens.png" />
+    <Content Include="Templates\DL-SonarQube\Images\analysis_report.png" />
+    <Content Include="Templates\DL-SonarQube\Images\bug_details.png" />
+    <Content Include="Templates\DL-SonarQube\Images\build_configure.png" />
+    <Content Include="Templates\DL-SonarQube\Images\build_summary.png" />
+    <Content Include="Templates\Gen-Tailwind Traders\Images\Architecture.png" />
+    <Content Include="Templates\Gen-Tailwind Traders\Images\Website.png" />
+    <Content Include="Templates\TemplateImages\eShop.png" />
+    <Content Include="Templates\TemplateImages\mslearn\bicep-publish-code-pipelines.png" />
+    <Content Include="Templates\TemplateImages\policy-org.png" />
+    <Content Include="Templates\TemplateImages\Ansible.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\Azure Sentinel DevOps.jpg" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\iac.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\ModernDataAnalytics.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\ModernDataWarehouse.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\modiot.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\NIST 800-171.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\RecommederIcon.PNG" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\SapOnAzureLogo.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\Secureresearch.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\unifiedgov.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\windows-virtual-desktop.svg" />
+    <Content Include="Templates\TemplateImages\AzureFunction.png" />
+    <Content Include="Templates\TemplateImages\AzureCommunity\AzureGov.png" />
+    <Content Include="Templates\TemplateImages\CloudAdoptionFramework.jpg" />
+    <Content Include="Templates\TemplateImages\CodeFile.png" />
+    <Content Include="Templates\TemplateImages\ContosAir.png" />
+    <Content Include="Templates\TemplateImages\devopsdojo.png" />
+    <Content Include="Templates\TemplateImages\Docker.png" />
+    <Content Include="Templates\TemplateImages\Dynatrace.png" />
+    <Content Include="Templates\TemplateImages\GitHub.png" />
+    <Content Include="Templates\TemplateImages\key-vault.png" />
+    <Content Include="Templates\TemplateImages\kubernetes.png" />
+    <Content Include="Templates\TemplateImages\launchdarkly.png" />
+    <Content Include="Templates\TemplateImages\MachineLearning.png" />
+    <Content Include="Templates\TemplateImages\mslearn\bicep-end-to-end-deployment-pipeline.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\bicepenvironments.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\create-a-build-pipeline-azure-pipelines.png" />
+    <Content Include="Templates\TemplateImages\mslearn\create-a-release-pipeline-with-azure-pipelines.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\create-multi-stage-pipeline.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\deploy-azure-functions.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\deploy-docker.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\deploy-kubernetes.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\generic-badge.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\host-your-own-build-server-in-your-build-pipeline.png" />
+    <Content Include="Templates\TemplateImages\mslearn\implement-a-code-workflow-in-your-build-pipeline.png" />
+    <Content Include="Templates\TemplateImages\mslearn\manage-agile-software-delivery-plans-across-teams.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\manage-database-changes-with-azure-pipelines.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\manage-dependencies-in-your-build-pipeline.png" />
+    <Content Include="Templates\TemplateImages\mslearn\manage-release-cadence-using-deployment-patterns.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\manage-security-and-compliance-in-your-build-pipeline.png" />
+    <Content Include="Templates\TemplateImages\mslearn\provision-database-azure-pipelines.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\review-azure-infrastructure.png" />
+    <Content Include="Templates\TemplateImages\mslearn\run-functional-tests-azure-pipelines.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\run-non-functional-tests-in-azure-pipelines.svg" />
+    <Content Include="Templates\TemplateImages\mslearn\run-quality-tests-when-your-application-builds.png" />
+    <Content Include="Templates\TemplateImages\mslearn\scan-code-for-vulnerabilities-in-your-build-pipeline.png" />
+    <Content Include="Templates\TemplateImages\mslearn\testbicep.svg" />
+    <Content Include="Templates\TemplateImages\MyHealthClinic.png" />
+    <Content Include="Templates\TemplateImages\MyShuttle.png" />
+    <Content Include="Templates\TemplateImages\octopus.png" />
+    <Content Include="Templates\TemplateImages\Partunlimited.png" />
+    <Content Include="Templates\TemplateImages\PHP.png" />
+    <Content Include="Templates\TemplateImages\Python.png" />
+    <Content Include="Templates\TemplateImages\selenium.png" />
+    <Content Include="Templates\TemplateImages\AzureDevOps.png" />
+    <Content Include="Templates\TemplateImages\SmartHotel.png" />
+    <Content Include="Templates\TemplateImages\SonarQube.png" />
+    <Content Include="Templates\TemplateImages\TailwindTraders.png" />
+    <Content Include="Templates\TemplateImages\Terraform.png" />
+    <Content Include="Templates\TemplateImages\WhiteSourceBolt.png" />
+    <Content Include="Images\tfs.png" />
+    <Content Include="Images\theme_img_3.png" />
+    <Content Include="Images\Thinking_Face_Emoji.png" />
+    <Content Include="Images\twitter.png" />
+    <Content Include="Images\user-clear.png" />
+    <Content Include="Images\Verify_image.jpg" />
+    <Content Include="Images\vs-logo.png" />
+    <Content Include="Scripts\AppScripts\create.js" />
+    <Content Include="Scripts\AppScripts\Extractor.js" />
+    <Content Include="Scripts\AppScripts\FileUpload.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Scripts\tooltip.js" />
+    <Content Include="Templates\Gen-PartsUnlimited\Wiki\ProjectWiki\PartsUnlimitedWiki\Development Environment.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Wiki\ProjectWiki\PartsUnlimitedWiki\Getting Started.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Wiki\ProjectWiki\PartsUnlimitedWiki\Key Features.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Wiki\ProjectWiki\AboutPartsUnlimited.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\WorkItemAttachments\217227appInsights.png" />
+    <Content Include="Templates\DL-Terraform\Images\queuebuild.gif" />
+    <Content Include="Templates\DL-Terraform\Images\releasetasks.png" />
+    <Content Include="Templates\DL-Terraform\Images\releasetrigger.gif" />
+    <Content Include="Templates\DL-Terraform\Images\Terraform.png" />
+    <Content Include="Templates\DL-Terraform\Images\webapp.png" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Images\CI.png" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Images\WhiteSourceBolt13.png" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Images\WhiteSourceBolt30.png" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="assets\css\custom.min.css.map" />
+    <Content Include="assets\css\custom.scss" />
+    <Content Include="Content\assets\css\custom.min.css.map" />
+    <Content Include="Content\assets\css\custom.scss" />
+    <Content Include="PreSetting\BoardColumns.json" />
+    <Content Include="PreSetting\TeamArea.json" />
+    <Content Include="PreSetting\UpdateCardFields.json" />
+    <Content Include="PreSetting\UpdateCardStyles.json" />
+    <Content Include="PreSetting\ProjectSettings.json" />
+    <Content Include="PreSetting\ProjectTemplate.json" />
+    <Content Include="Content\extractor\assets\css\custom.min.css.map" />
+    <Content Include="Content\extractor\assets\css\custom.scss" />
+    <Content Include="PreSetting\ImportSourceCode.json" />
+    <Content Include="PreSetting\ServiceEndPoint.json" />
+    <Content Include="Templates\CreateProject.json" />
+    <Content Include="Templates\DL-DeploymentGroups\BoardColumns.json" />
+    <Content Include="Templates\DL-DeploymentGroups\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\DL-DeploymentGroups\BuildDefinitions\DeploymentGroups.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-DeploymentGroups\EnableEpic.json" />
+    <Content Include="Templates\DL-DeploymentGroups\ImportSourceCode\DeploymentGroup.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Iterations.json" />
+    <Content Include="Templates\DL-DeploymentGroups\ProjectSettings.json" />
+    <Content Include="Templates\DL-DeploymentGroups\ProjectTemplate.json" />
+    <Content Include="Templates\DL-DeploymentGroups\QueueBuild.json" />
+    <Content Include="Templates\DL-DeploymentGroups\ReleaseDefinitions\DeploymentGroups.json" />
+    <Content Include="Templates\DL-DeploymentGroups\ServiceEndPoints\DeploymentGroup - code.json" />
+    <Content Include="Templates\DL-DeploymentGroups\TeamArea.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Teams.json" />
+    <Content Include="Templates\DL-DeploymentGroups\UpdateCardFields.json" />
+    <Content Include="Templates\Events.json" />
+    <Content Include="Templates\DL-GitHub\BoardColumns.json" />
+    <Content Include="Templates\DL-GitHub\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\BugfromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\BuildDefinitions\GitHub.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-GitHub\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-GitHub\EnableEpic.json" />
+    <Content Include="Templates\DL-GitHub\EpicfromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\Extensions.json" />
+    <Content Include="Templates\DL-GitHub\FeaturefromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\ImportSourceCode\GitHub.json" />
+    <Content Include="Templates\DL-GitHub\PBIfromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\ProjectSettings.json" />
+    <Content Include="Templates\DL-GitHub\ProjectTemplate.json" />
+    <Content Include="Templates\DL-GitHub\ReleaseDefinitions\GitHub.json" />
+    <Content Include="Templates\DL-GitHub\ServiceEndpoints\GitHub-code.json" />
+    <Content Include="Templates\DL-GitHub\TaskfromTemplate.json" />
+    <Content Include="Templates\DL-GitHub\TeamArea.json" />
+    <Content Include="Templates\DL-GitHub\Teams.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\BoardColumns.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\BugfromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\BuildDefinitions\MyHealthClinic.Web.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Dashboard.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\Active Bugs.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\All Items.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\Test Case-Readiness.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\User Stories.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\WidgetQuery.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\EnableEpic.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\EpicfromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Extensions.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\FeaturefromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\ImportSourceCode\MyHealthClinic.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\PBIfromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\ProjectSettings.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\PullRequests\Comments\PullRequest1.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\PullRequests\Comments\PullRequest2.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\PullRequests\PullRequest1.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\PullRequests\PullRequest2.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\ReleaseDefinitions\HealthClinic.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\ServiceEndpoints\myHealthClinic-code.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\TaskfromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\TeamArea.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Teams.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\TestCasefromTemplate.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\UpdateCardFields.json" />
+    <Content Include="Templates\Gen-MyShuttle\BuildDefinitions\MyShuttleBuild.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Dashboard.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Bugs.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Feature.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Test Cases.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Test Plans.json" />
+    <Content Include="Templates\Gen-MyShuttle\Dashboard\Queries\Test Suites.json" />
+    <Content Include="Templates\Gen-MyShuttle\ImportSourceCode\MyShuttle.json" />
+    <Content Include="Templates\Gen-MyShuttle\ServiceEndpoints\MyShuttle-code.json" />
+    <Content Include="Templates\DL-Octopus\BoardColumns.json" />
+    <Content Include="Templates\DL-Octopus\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\DL-Octopus\BuildDefinitions\Octopus.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-Octopus\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-Octopus\EnableEpic.json" />
+    <Content Include="Templates\DL-Octopus\EpicfromTemplate.json" />
+    <Content Include="Templates\DL-Octopus\Extensions.json" />
+    <Content Include="Templates\DL-Octopus\FeaturefromTemplate.json" />
+    <Content Include="Templates\DL-Octopus\ImportSourceCode\Octopus.json" />
+    <Content Include="Templates\DL-Octopus\PBIfromTemplate.json" />
+    <Content Include="Templates\DL-Octopus\ProjectSettings.json" />
+    <Content Include="Templates\DL-Octopus\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Octopus\ServiceEndpoints\Octopus-code.json" />
+    <Content Include="Templates\DL-Octopus\ServiceEndpoints\Octopus.json" />
+    <Content Include="Templates\DL-Octopus\TaskfromTemplate.json" />
+    <Content Include="Templates\DL-Octopus\TeamArea.json" />
+    <Content Include="Templates\DL-Octopus\Teams.json" />
+    <Content Include="Templates\DL-Octopus\UpdateCardFields.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\BoardColumns.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\BugfromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\BuildDefinitions\PartsUnlimitedE2E.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\EnableEpic.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\EpicfromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Extensions.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\FeaturefromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ImportSourceCode.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ImportSourceCode\PartsUnlimited.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\PBIfromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ProjectSettings.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\PullRequests\Comments\PullRequest1.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\PullRequests\Comments\PullRequest2.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\PullRequests\PullRequest1.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\PullRequests\PullRequest2.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Query.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ReleaseDefinitions\PartsUnlimitedE2E.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\ServiceEndpoints\partsUnlimited-code.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\TaskfromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\TeamArea.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Teams.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\TestCasefromTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\TestPlans\TestPlan1.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\TestPlans\TestSuites\TestPlan1.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\UpdateCardFields.json" />
+    <Content Include="Templates\DL-Python\BuildDefinitions\Python.json" />
+    <Content Include="Templates\DL-Python\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-Python\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-Python\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-Python\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-Python\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-Python\EnableEpic.json" />
+    <Content Include="Templates\DL-Python\ImportSourceCode\PythonDjango.json" />
+    <Content Include="Templates\DL-Python\ProjectSettings.json" />
+    <Content Include="Templates\DL-Python\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Python\ServiceEndpoints\Python-code.json" />
+    <Content Include="Templates\DL-Python\TeamArea.json" />
+    <Content Include="Templates\DL-Selenium\BuildDefinitions\Selenium.json" />
+    <Content Include="Templates\DL-Selenium\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-Selenium\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-Selenium\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-Selenium\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-Selenium\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-Selenium\EnableEpic.json" />
+    <Content Include="Templates\DL-Selenium\Extensions.json" />
+    <Content Include="Templates\DL-Selenium\ImportSourceCode\Selenium.json" />
+    <Content Include="Templates\DL-Selenium\ProjectSettings.json" />
+    <Content Include="Templates\DL-Selenium\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Selenium\ReleaseDefinitions\Selenium.json" />
+    <Content Include="Templates\DL-Selenium\ServiceEndpoints\Selenium-code.json" />
+    <Content Include="Templates\DL-SonarQube\BuildDefinitions\SonarQube.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-SonarQube\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-SonarQube\EnableEpic.json" />
+    <Content Include="Templates\DL-SonarQube\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-SonarQube\Extensions.json" />
+    <Content Include="Templates\DL-SonarQube\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-SonarQube\ImportSourceCode\MyShuttle.json" />
+    <Content Include="Templates\DL-SonarQube\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DL-SonarQube\ProjectSettings.json" />
+    <Content Include="Templates\DL-SonarQube\ProjectTemplate.json" />
+    <Content Include="Templates\DL-SonarQube\ServiceEndPoints\SonarQube-code.json" />
+    <Content Include="Templates\DL-SonarQube\WorkItems\Task.json" />
+    <Content Include="Templates\TemplateSetting.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\BuildDefinitions\WhiteSourceBolt.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\EnableEpic.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Extensions.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\ImportSourceCode\WebGoat.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Iterations.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\ProjectSettings.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\ProjectTemplate.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\ServiceEndpoints\WebGoat-code.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\WorkItems\Task.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\TeamArea.json" />
+    <Content Include="Templates\DL-AKS\BuildDefinitions\AKS.json" />
+    <Content Include="Templates\DL-AKS\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-AKS\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-AKS\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-AKS\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-AKS\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-AKS\EnableEpic.json" />
+    <Content Include="Templates\DL-AKS\Extensions.json" />
+    <Content Include="Templates\DL-AKS\ImportSourceCode\AKS.json" />
+    <Content Include="Templates\DL-AKS\ReleaseDefinitions\AKS.json" />
+    <Content Include="Templates\DL-AKS\ServiceEndpoints\AKS-code.json" />
+    <Content Include="Templates\DL-Docker\BuildDefinitions\Docker.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Queries\All Work Items.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Queries\Epic.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Queries\Product Backlog Items.json" />
+    <Content Include="Templates\DL-Docker\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\DL-Docker\EnableEpic.json" />
+    <Content Include="Templates\DL-Docker\Extensions.json" />
+    <Content Include="Templates\DL-Docker\ImportSourceCode\Docker.json" />
+    <Content Include="Templates\DL-Docker\ProjectSettings.json" />
+    <Content Include="Templates\DL-Docker\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Docker\ReleaseDefinitions\Docker.json" />
+    <Content Include="Templates\DL-Docker\ServiceEndpoints\Docker-code.json" />
+    <Content Include="Templates\DL-Docker\TeamArea.json" />
+    <Content Include="Templates\DL-ReleaseGates\BuildDefinitions\PartsUnlimited-CI.json" />
+    <Content Include="Templates\DL-ReleaseGates\Dashboard\Queries\Bugs.json" />
+    <Content Include="Templates\DL-ReleaseGates\EnableEpic.json" />
+    <Content Include="Templates\DL-ReleaseGates\ImportSourceCode\PartsUnlimited.json" />
+    <Content Include="Templates\DL-ReleaseGates\ProjectSettings.json" />
+    <Content Include="Templates\DL-ReleaseGates\ProjectTemplate.json" />
+    <Content Include="Templates\DL-ReleaseGates\ReleaseDefinitions\PartsUnlimited-CD.json" />
+    <Content Include="Templates\DL-ReleaseGates\ServiceEndpoints\PartsUnlimited-code.json" />
+    <Content Include="Templates\DL-ReleaseGates\TeamArea.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Wiki\ProjectWiki\CreateWiki.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Wiki\CodeWiki\CreateWiki.json" />
+    <Content Include="Views\Account\Unsupported_browser.cshtml" />
+    <Content Include="Templates\Gen-SmartHotel360\BoardColumns.json" />
+    <Content Include="Templates\Gen-SmartHotel360\BugfromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\EnableEpic.json" />
+    <Content Include="Templates\Gen-SmartHotel360\EpicfromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Extensions.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ImportSourceCode\PublicWeb.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ImportSourceCode\SmartHotel360.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Iterations.json" />
+    <Content Include="Templates\Gen-SmartHotel360\PBIfromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ProjectSettings.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ServiceEndpoints\GitHub_SmartHotel360-public-web.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ServiceEndpoints\PublicWeb-code.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ServiceEndpoints\SmartHotel360-code.json" />
+    <Content Include="Templates\Gen-SmartHotel360\TaskfromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\TeamArea.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Teams.json" />
+    <Content Include="Templates\Gen-SmartHotel360\UpdateCardFields.json" />
+    <Content Include="Templates\Gen-SmartHotel360\PullRequests\PullRequest1.json" />
+    <Content Include="Templates\Gen-SmartHotel360\PullRequests\PullRequest2.json" />
+    <Content Include="Templates\Gen-SmartHotel360\PullRequests\Comments\PullRequest1.json" />
+    <Content Include="Templates\Gen-SmartHotel360\PullRequests\Comments\PullRequest2.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\All Items.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\BacklogBoard WI.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Board WI.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Bugs without Repro Steps.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Features with no Product Owner.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\MobileTeam_Work.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Open Bugs.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\State of TestCases.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Unassigned Bugs.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Unassigned Tasks.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\WebTeam_Work.json" />
+    <Content Include="Templates\Gen-SmartHotel360\TestCasefromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\TestPlans\TestPlan1.json" />
+    <Content Include="Templates\Gen-SmartHotel360\TestPlans\TestSuites\TestPlan1.json" />
+    <Content Include="Templates\Gen-SmartHotel360\FeaturefromTemplate.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Dashboard.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Bugs.json" />
+    <Content Include="Templates\Gen-SmartHotel360\UpdateTeamArea.json" />
+    <Content Include="Views\Extractor\Index.cshtml" />
+    <Content Include="Views\Extractor\NotFound.cshtml" />
+    <Content Include="NewFeature\RegisteredUsers.json" />
+    <Content Include="PreSetting\GitHubEndPoint.json" />
+    <Content Include="PreSetting\DemoExtensions.json" />
+    <Content Include="assets\templategrouping\templateSelection.custom.min.css" />
+    <Content Include="JSON\ErrorMessages.json" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-api - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-api - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-extractor - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-extractor - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-staging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\azuredevopsdemogenerator-staging - Web Deploy.pubxml" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\UnfinishedWork.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\EndpointKeyConfig.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\UnfinishedWork.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\UnfinishedWork.json" />
+    <Content Include="Templates\DL-DeploymentGroups\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\Gen-SmartHotel360\Dashboard\Queries\Feedback.json" />
+    <Content Include="Templates\DL-LaunchDarkly\BuildDefinitions\LaunchDarkly.json" />
+    <Content Include="Templates\DL-LaunchDarkly\Extensions.json" />
+    <Content Include="Templates\DL-LaunchDarkly\ImportSourceCode\LaunchDarkly.json" />
+    <Content Include="Templates\DL-LaunchDarkly\ProjectSettings.json" />
+    <Content Include="Templates\DL-LaunchDarkly\ProjectTemplate.json" />
+    <Content Include="Templates\DL-LaunchDarkly\ReleaseDefinitions\LaunchDarkly.json" />
+    <Content Include="Templates\DL-LaunchDarkly\ServiceEndpoints\LaunchDarkly-code.json" />
+    <Content Include="Templates\DL-LaunchDarkly\UerStoriesfromTemplate.json" />
+    <Content Include="Templates\DL-AzureFunctions\BuildDefinitions\AzureFunctions_CI.json" />
+    <Content Include="Templates\DL-AzureFunctions\EnableEpic.json" />
+    <Content Include="Templates\DL-AzureFunctions\ImportSourceCode\AzureFunctions.json" />
+    <Content Include="Templates\DL-AzureFunctions\ReleaseDefinitions\AzureFunctions_CD.json" />
+    <Content Include="Templates\DL-AzureFunctions\ServiceEndpoints\AzureFunctions-code.json" />
+    <Content Include="Templates\DL-Terraform\BuildDefinitions\Terraform.json" />
+    <Content Include="Templates\DL-Terraform\Extensions.json" />
+    <Content Include="Templates\DL-Terraform\ImportSourceCode\Terraform.json" />
+    <Content Include="Templates\DL-Terraform\ProjectSettings.json" />
+    <Content Include="Templates\DL-Terraform\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Terraform\ReleaseDefinitions\Terraform.json" />
+    <Content Include="Templates\DL-Terraform\ServiceEndpoints\Terraform-code.json" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
+    <None Include="Properties\PublishProfiles\demogenapi - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\demogenapi - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile2.pubxml" />
+    <None Include="Properties\PublishProfiles\vstsdemogenerator-test - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\vstsdemogenerator-test - FTP1.pubxml" />
+    <Content Include="Templates\Gen-MyShuttle\BuildDefinitions\MyShuttleDockerBuild.json" />
+    <Content Include="Templates\Gen-MyShuttle\ReleaseDefinitions\MyShuttleDockerRelease.json" />
+    <Content Include="Views\Environment\CreateProject.cshtml" />
+    <Content Include="Templates\Gen-SmartHotel360\ReleaseDefinitions\SmartHotelWebsite Deploy.json" />
+    <Content Include="Templates\Gen-SmartHotel360\BuildDefinitions\SmartHotelPetcheckerWeb.json" />
+    <Content Include="Templates\Gen-ContosoAir\BugfromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\BuildDefinitions\ContosoAirBuild.json" />
+    <Content Include="Templates\Gen-ContosoAir\EnableEpic.json" />
+    <Content Include="Templates\Gen-ContosoAir\EpicfromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\Extensions.json" />
+    <Content Include="Templates\Gen-ContosoAir\FeaturefromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\Iterations.json" />
+    <Content Include="Templates\Gen-ContosoAir\PBIfromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\ProjectSettings.json" />
+    <Content Include="Templates\Gen-ContosoAir\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\ReleaseDefinitions\ContosoAirRelease.json" />
+    <Content Include="Templates\Gen-ContosoAir\TaskfromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\TeamArea.json" />
+    <Content Include="Templates\Gen-ContosoAir\Teams.json" />
+    <Content Include="Templates\Gen-ContosoAir\UserStoriesfromTemplate.json" />
+    <Content Include="Templates\Gen-ContosoAir\ServiceEndpoints\ContosoAir.json" />
+    <Content Include="Templates\Gen-ContosoAir\BoardColumns.json" />
+    <Content Include="Templates\Gen-ContosoAir\UpdateCardFields.json" />
+    <Content Include="Templates\DL-MachineLearning\BuildDefinitions\DevOps-for-AI.json" />
+    <Content Include="Templates\DL-MachineLearning\ImportSourceCode\DevOps-for-AI.json" />
+    <Content Include="Templates\DL-MachineLearning\ProjectSettings.json" />
+    <Content Include="Templates\DL-MachineLearning\ProjectTemplate.json" />
+    <Content Include="Templates\DL-MachineLearning\ReleaseDefinitions\DevOps-for-AI.json" />
+    <Content Include="Templates\DL-MachineLearning\ServiceEndpoints\DevOps-for-AI.json" />
+    <Content Include="Templates\DL-MachineLearning\TeamArea.json" />
+    <Content Include="Templates\DL-MachineLearning\Teams.json" />
+    <Content Include="Templates\DL-Ansible\BuildDefinitions\Ansible-CI.json" />
+    <Content Include="Templates\DL-Ansible\Extensions.json" />
+    <Content Include="Templates\DL-Ansible\ImportSourceCode\SmartHotel360-CouponManagement.json" />
+    <Content Include="Templates\DL-Ansible\ProjectSettings.json" />
+    <Content Include="Templates\DL-Ansible\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Ansible\ReleaseDefinitions\Ansible.json" />
+    <Content Include="Templates\DL-Ansible\ServiceEndpoints\SmartHotel360-CouponManagement.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Extensions.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ImportSourceCode\TailwindTraders-Website.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Iterations.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ProjectSettings.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\TeamArea.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Teams.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Website Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Website Team\BoardRows.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Website Team\CardFields.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Website Team\CardStyles.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\Teams\Website Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Task.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\User Story.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\BuildDefinitions\Website-CI.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ReleaseDefinitions\Website-CD.json" />
+    <Content Include="Templates\CreateWiki.json" />
+    <Content Include="Templates\MovePages.json" />
+    <Content Include="Templates\SampleContent.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ImportSourceCode\TailwindTraders-Backend.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ImportSourceCode\Tailwind Traders.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ServiceEndpoints\Tailwind Traders.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ReleaseDefinitions\Backend-CD.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\BuildDefinitions\Backend-CI.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Feature.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Epic.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Bug.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Test Case.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Test Plan.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\WorkItems\Test Suite.json" />
+    <Content Include="Templates\DL-Keyvault\BuildDefinitions\SmartHotel-CouponManagement-CI.json" />
+    <Content Include="Templates\DL-Keyvault\Extensions.json" />
+    <Content Include="Templates\DL-Keyvault\Iterations.json" />
+    <Content Include="Templates\DL-Keyvault\ProjectSettings.json" />
+    <Content Include="Templates\DL-Keyvault\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Keyvault\ReleaseDefinitions\SmartHotel-CouponManagement-CD.json" />
+    <Content Include="Templates\DL-Keyvault\ServiceEndpoints\Azure-MSDN1.json" />
+    <Content Include="Templates\DL-Keyvault\TeamArea.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\SmartHotel-CouponManagement Team\BoardColumns.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\SmartHotel-CouponManagement Team\BoardRows.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\SmartHotel-CouponManagement Team\CardFields.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\SmartHotel-CouponManagement Team\CardStyles.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\SmartHotel-CouponManagement Team\TeamSetting.json" />
+    <Content Include="Templates\DL-Keyvault\Teams\Teams.json" />
+    <Content Include="Templates\DL-Keyvault\WorkItems\User Story.json" />
+    <Content Include="Templates\ContosoShuttle\Dashboard\Dashboard.json" />
+    <Content Include="Templates\ContosoShuttle\EnableEpic.json" />
+    <Content Include="Templates\ContosoShuttle\EpicfromTemplate.json" />
+    <Content Include="Templates\ContosoShuttle\ImportSourceCode\ContosoShuttle.json" />
+    <Content Include="Templates\ContosoShuttle\PBIfromTemplate.json" />
+    <Content Include="Templates\ContosoShuttle\ProjectSettings.json" />
+    <Content Include="Templates\ContosoShuttle\ProjectTemplate.json" />
+    <Content Include="Templates\ContosoShuttle\ServiceEndpoints\ContosoShuttle-code.json" />
+    <Content Include="Templates\ContosoShuttle\TaskfromTemplate.json" />
+    <Content Include="Templates\ContosoShuttle\TeamArea.json" />
+    <Content Include="Templates\ContosoShuttle\Teams.json" />
+    <Content Include="Templates\ContosoShuttle\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\ContosoShuttle2\ImportSourceCode\ContosoShuttle.json" />
+    <Content Include="Templates\ContosoShuttle2\Iterations.json" />
+    <Content Include="Templates\ContosoShuttle2\ProjectSettings.json" />
+    <Content Include="Templates\ContosoShuttle2\ProjectTemplate.json" />
+    <Content Include="Templates\ContosoShuttle2\ServiceEndpoints\ContosoShuttle-code.json" />
+    <Content Include="Templates\ContosoShuttle2\TeamArea.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\ContosoShuttle Team\BoardColumns.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\ContosoShuttle Team\BoardRows.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\ContosoShuttle Team\CardFields.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\ContosoShuttle Team\CardStyles.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\ContosoShuttle Team\TeamSetting.json" />
+    <Content Include="Templates\ContosoShuttle2\Teams\Teams.json" />
+    <Content Include="Templates\ContosoShuttle2\WorkItems\Epic.json" />
+    <Content Include="Templates\ContosoShuttle2\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\ContosoShuttle2\WorkItems\Task.json" />
+    <Content Include="Templates\ContosoShuttle2\Dashboard\Dashboard.json" />
+    <Content Include="Templates\ContosoShuttle2\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\BuildDefinitions\PartsUnlimited.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\ImportSourceCode\PartsUnlimited.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Iterations.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\ProjectSettings.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\ReleaseDefinitions\PartsUnlimitedE2E.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\ServiceEndpoints\PartsUnlimited-code.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\TeamArea.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PartsUnlimited_YAML Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PartsUnlimited_YAML Team\BoardRows.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PartsUnlimited_YAML Team\CardFields.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PartsUnlimited_YAML Team\CardStyles.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PartsUnlimited_YAML Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL-DB\BoardColumns.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL-DB\BoardRows.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL-DB\CardFields.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL-DB\CardStyles.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL-DB\TeamSetting.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL\BoardColumns.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL\BoardRows.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL\CardFields.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL\CardStyles.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\PUL\TeamSetting.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\Teams\Teams.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Bug.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Epic.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Feature.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Task.json" />
+    <Content Include="Templates\Gen-PartsUnlimited-YAML\WorkItems\Test Case.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\BuildDefinitions\Bookings-CI.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\BuildDefinitions\Bookings-Nightly.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\BuildDefinitions\Coupons-CI.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\BuildDefinitions\Coupons-Nightly.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Extensions.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ImportSourceCode\DevOps-Dojo-Booking.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ImportSourceCode\DevOps-Dojo-Coupons.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ImportSourceCode\DevOps-Dojo-Setup.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ImportSourceCode\DevOps-Dojo.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Iterations.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ProjectSettings.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ProjectTemplate.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ReleaseDefinitions\Bookings-CD manual.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ReleaseDefinitions\Bookings-CD.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ReleaseDefinitions\Coupon-CD.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ServiceEndpoints\DevOps-Dojo-Booking-code.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ServiceEndpoints\DevOps-Dojo-code.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ServiceEndpoints\DevOps-Dojo-Coupons-code.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ServiceEndpoints\DevOps-Dojo-Setup-code.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\ServiceEndpoints\ES-INT-DOJO-DEV-DOJOWB-Conn.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\TeamArea.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\DevOps-Dojo Team\BoardColumns.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\DevOps-Dojo Team\BoardRows.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\DevOps-Dojo Team\CardFields.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\DevOps-Dojo Team\CardStyles.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\DevOps-Dojo Team\TeamSetting.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\Teams\Teams.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\WorkItems\Epic.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DoJoWhiteBeltGold\WorkItems\Task.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Iterations.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\TeamArea.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Iterations.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\TeamArea.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Iterations.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\TeamArea.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Iterations.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\TeamArea.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Iterations.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\TeamArea.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Iterations.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\TeamArea.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Iterations.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\ServiceEndpoints\Space Game - web-code.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\TeamArea.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Teams\Space Game - web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Teams\Space Game - web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Teams\Space Game - web Team\CardFields.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Teams\Space Game - web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Create-Build-Pipeline\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Views\GitHub\Oauth.cshtml" />
+    <Content Include="Views\GitHub\Redirect.cshtml" />
+    <Content Include="Views\GitHub\Status.cshtml" />
+    <None Include="Properties\PublishProfiles\vstsdemogenerator-test - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\vstsdemogenerator-test - Web Deploy1.pubxml" />
+    <Content Include="Templates\Gen-SmartHotel360\BuildDefinitionGitHub\SmartHotelPetcheckerWeb.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Implement-Code-Workflow\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\BuildDefinitionGitHub\SpaceGameWeb-Build.json" />
+    <Content Include="Views\GitHub\Issue.cshtml" />
+    <Content Include="Templates\Gen-Tailwind Traders\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ServiceEndpoints\GitHub_TailwindTradersWeb.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\ServiceEndpoints\GitHub_TailwindTraderBackend.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\BuildDefinitionGitHub\Backend-CI.json" />
+    <Content Include="Templates\Gen-Tailwind Traders\BuildDefinitionGitHub\Website-CI.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Host-Build-Agent\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Templates\MSL-Manage-Build-Dependencies\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Templates\MSL-Run-Quality-Tests\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Templates\MSL-Scan-for-Vulnerabilities\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Templates\MSL-Scan-Open-Source\ServiceEndpoints\GitHub_Jamcneil_code.json" />
+    <Content Include="Templates\Gen-SmartHotel360\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Dashboard\Queries\All items, all states.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Dashboard\Queries\Workload Template.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Extensions.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\ImportSourceCode\Cloud Adoption Plan Master.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Iterations.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\ProjectSettings.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\ServiceEndpoints\Cloud Adoption Plan Master-code.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\TeamArea.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Cloud Adoption Plan Master Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Cloud Adoption Plan Master Team\BoardRows.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Cloud Adoption Plan Master Team\CardFields.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Cloud Adoption Plan Master Team\CardStyles.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Cloud Adoption Plan Master Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\Teams\Teams.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-CloudAdoptionPlan\WorkItems\User Story.json" />
+    <Content Include="Views\Environment\PrivateTemplate.cshtml" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\ImportSourceCode\Space Game - web - Deploy database.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\ServiceEndpoints\GitHub_c26ff2e9-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Teams\Space Game - web - Deploy database Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Teams\Space Game - web - Deploy database Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Teams\Space Game - web - Deploy database Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Teams\Space Game - web - Deploy database Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeployDatabase\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\ImportSourceCode\Space Game - web - Deployment patterns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\ServiceEndpoints\GitHub_604d3592-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Teams\Space Game - web - Deployment patterns Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Teams\Space Game - web - Deployment patterns Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Teams\Space Game - web - Deployment patterns Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Teams\Space Game - web - Deployment patterns Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-DeploymentPatterns\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\ImportSourceCode\Space Game - web - Functional tests.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\ServiceEndpoints\GitHub_8dceab94-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Teams\Space Game - web - Functional tests Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Teams\Space Game - web - Functional tests Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Teams\Space Game - web - Functional tests Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Teams\Space Game - web - Functional tests Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-FunctionalTests\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ImportSourceCode\Space Game - web - Release workflow.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ServiceEndpoints\GitHub_93b35f8f-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\ServiceEndpoints\GitHub_eb001d95-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Teams\Space Game - web - Release workflow Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Teams\Space Game - web - Release workflow Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Teams\Space Game - web - Release workflow Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Teams\Space Game - web - Release workflow Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Multi-stage\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\ImportSourceCode\Space Game - web - Non-functional tests.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\ServiceEndpoints\GitHub_39e50711-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Teams\Space Game - web - Non-functional tests Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Teams\Space Game - web - Non-functional tests Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Teams\Space Game - web - Non-functional tests Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Teams\Space Game - web - Non-functional tests Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Non-functionalTests\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\ImportSourceCode\Space Game - web - Release.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\ServiceEndpoints\GitHub_70ec1fc5-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Teams\Space Game - web - Release Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Teams\Space Game - web - Release Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Teams\Space Game - web - Release Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Teams\Space Game - web - Release Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Release\Teams\Teams.json" />
+    <Content Include="Views\Account\SessionOutReturn.cshtml" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\BuildDefinitionGitHub\tpetchelmslearn-tailspin-spacegame-web-automate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\ServiceEndpoints\GitHub_69cc250c-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Teams\Space Game - web - Terraform Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Teams\Space Game - web - Terraform Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Teams\Space Game - web - Terraform Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Teams\Space Game - web - Terraform Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-Terraform\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\BuildDefinitionGitHub\mslearn-tailspin-spacegame-web-automate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ImportSourceCode\Space Game - web - ProvisionDB.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ServiceEndpoints\GitHub_69cc250c.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\ServiceEndpoints\GitHub_7cdb389c-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Teams\Space Game - web - ProvisionDB Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Teams\Space Game - web - ProvisionDB Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Teams\Space Game - web - ProvisionDB Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Teams\Space Game - web - ProvisionDB Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-web-ProvisionDB\WorkItems\Issue.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\TeamIterationMap.json" />
+    <Content Include="Templates\Gen-MyHealthClinic\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\ImportSourceCode\Space Game - web.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\ServiceEndpoints\Space Game - web-code.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\ServiceEndpoints\spacegame-web.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Engine Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Engine Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Engine Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Engine Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Web Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Web Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Web Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game Web Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\TeamIterationMap.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\BuildDefinitionGitHub\EdKaimmslearn-tailspin-spacegame-web-azure-functions.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ImportSourceCode\Space Game - web - Release workflow.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Iterations.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ProjectSettings.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ServiceEndpoints\GitHub_210c1c54-EndPoint.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\ServiceEndpoints\Space Game - web - Release workflow-code.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\TeamArea.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Teams\Space Game Azure Functions Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Teams\Space Game Azure Functions Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Teams\Space Game Azure Functions Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Teams\Space Game Azure Functions Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\Teams\Teams.json" />
+    <Content Include="Templates\MSL-SpaceGame-AzureFunctions\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\BuildDefinitionGitHub\mslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ImportSourceCode\Space Game - web - Release workflow.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Iterations.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ServiceEndpoints\GitHub_51da3d38-EndPoint.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\ServiceEndpoints\Space Game - web - Release workflow-code.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\TeamArea.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Teams\Space Game - web - Docker Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Teams\Space Game - web - Docker Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Teams\Space Game - web - Docker Team\CardFields.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Teams\Space Game - web - Docker Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Deploy-Docker-Template\WorkItems\Issue.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\BuildDefinitionGitHub\mslearn-tailspin-spacegame-web-deploy.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ImportSourceCode\Space Game - web - Release workflow.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Iterations.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ServiceEndpoints\GitHub_9a905ff5-EndPoint.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\ServiceEndpoints\Space Game - web - Release workflow-code.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\TeamArea.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Teams\Space Game - web - Docker Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Teams\Space Game - web - Docker Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Teams\Space Game - web - Docker Team\CardFields.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Teams\Space Game - web - Docker Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Deploy-Kubernetes-Template\WorkItems\Issue.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Dashboard\Queries\All items, all states.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Dashboard\Queries\Workload Template.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\ImportSourceCode\Cloud Adoption Plan Master.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Iterations.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\ProjectSettings.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\ProjectTemplate.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\ServiceEndpoints\Cloud Adoption Plan Master-code.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\TeamArea.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\NIST 800-171 Template Team\BoardColumns.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\NIST 800-171 Template Team\BoardRows.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\NIST 800-171 Template Team\CardFields.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\NIST 800-171 Template Team\CardStyles.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\NIST 800-171 Template Team\TeamSetting.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\Teams\Teams.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\WorkItems\Epic.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\WorkItems\Feature.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\WorkItems\Task.json" />
+    <Content Include="Templates\AC-NIST800171Rev2\WorkItems\User Story.json" />
+    <Content Include="Templates\AC-AzureSentinel\ImportSourceCode\Azure Sentinel Template.json" />
+    <Content Include="Templates\AC-AzureSentinel\Iterations.json" />
+    <Content Include="Templates\AC-AzureSentinel\ProjectSettings.json" />
+    <Content Include="Templates\AC-AzureSentinel\ProjectTemplate.json" />
+    <Content Include="Templates\AC-AzureSentinel\ServiceEndpoints\Azure Sentinel Template-code.json" />
+    <Content Include="Templates\AC-AzureSentinel\TeamArea.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\AzureSentinelDeployment Team\BoardColumns.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\AzureSentinelDeployment Team\BoardRows.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\AzureSentinelDeployment Team\CardFields.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\AzureSentinelDeployment Team\CardStyles.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\AzureSentinelDeployment Team\TeamSetting.json" />
+    <Content Include="Templates\AC-AzureSentinel\Teams\Teams.json" />
+    <Content Include="Templates\AC-AzureSentinel\WorkItems\Feature.json" />
+    <Content Include="Templates\AC-AzureSentinel\WorkItems\Task.json" />
+    <Content Include="Templates\AC-AzureSentinel\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-AzureGovernance\ImportSourceCode\Azure Setup Guide.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Iterations.json" />
+    <Content Include="Templates\CAF-AzureGovernance\ProjectSettings.json" />
+    <Content Include="Templates\CAF-AzureGovernance\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-AzureGovernance\ServiceEndpoints\Azure Setup Guide-code.json" />
+    <Content Include="Templates\CAF-AzureGovernance\TeamArea.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Teams.json" />
+    <Content Include="Templates\CAF-AzureGovernance\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-AzureGovernance\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-AzureGovernance\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-ServerMigration\ImportSourceCode\Azure Sentinel Template.json" />
+    <Content Include="Templates\CAF-ServerMigration\Iterations.json" />
+    <Content Include="Templates\CAF-ServerMigration\ProjectSettings.json" />
+    <Content Include="Templates\CAF-ServerMigration\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-ServerMigration\ServiceEndpoints\Azure Sentinel Template-code.json" />
+    <Content Include="Templates\CAF-ServerMigration\TeamArea.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Server_Migration_Project Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Server_Migration_Project Team\BoardRows.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Server_Migration_Project Team\CardFields.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Server_Migration_Project Team\CardStyles.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Server_Migration_Project Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-ServerMigration\Teams\Teams.json" />
+    <Content Include="Templates\CAF-ServerMigration\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-ServerMigration\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-ServerMigration\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-ServerMigration\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Dashboard\Dashboard.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Dashboard\Queries\AKS_CAF_Query.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Dashboard\Queries\WVD-AKA.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Extensions.json" />
+    <Content Include="Templates\CAF-AKS_CAF\ImportSourceCode\Azure Sentinel Template.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Iterations.json" />
+    <Content Include="Templates\CAF-AKS_CAF\ProjectSettings.json" />
+    <Content Include="Templates\CAF-AKS_CAF\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-AKS_CAF\ServiceEndpoints\Azure Sentinel Template-code.json" />
+    <Content Include="Templates\CAF-AKS_CAF\TeamArea.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\AKA_Project Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\AKA_Project Team\BoardRows.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\AKA_Project Team\CardFields.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\AKA_Project Team\CardStyles.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\AKA_Project Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-AKS_CAF\Teams\Teams.json" />
+    <Content Include="Templates\CAF-AKS_CAF\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-AKS_CAF\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-AKS_CAF\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-AKS_CAF\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Dashboard\Dashboard.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Extensions.json" />
+    <Content Include="Templates\CAF-SQL_Migration\ImportSourceCode\Azure Sentinel Template.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Iterations.json" />
+    <Content Include="Templates\CAF-SQL_Migration\ProjectSettings.json" />
+    <Content Include="Templates\CAF-SQL_Migration\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-SQL_Migration\ServiceEndpoints\Azure Sentinel Template-code.json" />
+    <Content Include="Templates\CAF-SQL_Migration\TeamArea.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\Teams.json" />
+    <Content Include="Templates\CAF-SQL_Migration\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-SQL_Migration\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-SQL_Migration\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-SQL_Migration\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Dashboard\Dashboard.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Extensions.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\ImportSourceCode\Azure Sentinel Template.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Iterations.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\ProjectSettings.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\ServiceEndpoints\Azure Sentinel Template-code.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\TeamArea.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Teams.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\WVD-CAF-Project-Template Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\WVD-CAF-Project-Template Team\BoardRows.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\WVD-CAF-Project-Template Team\CardFields.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\WVD-CAF-Project-Template Team\CardStyles.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\WVD-CAF-Project-Template Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Dashboard\Queries\All items, all states.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Dashboard\Queries\All Tasks.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Dashboard\Queries\Workload Template.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\ImportSourceCode\Cloud Adoption Plan Master.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Iterations.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\ProjectSettings.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\ServiceEndpoints\Cloud Adoption Plan Master-code.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\TeamArea.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\CAF ADO Strategy-Plan-Ready-Gov Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\CAF ADO Strategy-Plan-Ready-Gov Team\BoardRows.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\CAF ADO Strategy-Plan-Ready-Gov Team\CardFields.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\CAF ADO Strategy-Plan-Ready-Gov Team\CardStyles.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\CAF ADO Strategy-Plan-Ready-Gov Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\Teams\Teams.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\WorkItems\Test Plan.json" />
+    <Content Include="Templates\CAF-ADO-Strategy-Plan-Ready-Governance\WorkItems\User Story.json" />
+    <Content Include="Templates\AC-WVDGuidance\Extensions.json" />
+    <Content Include="Templates\AC-WVDGuidance\ImportSourceCode\WVD Guidance.json" />
+    <Content Include="Templates\AC-WVDGuidance\Iterations.json" />
+    <Content Include="Templates\AC-WVDGuidance\ProjectSettings.json" />
+    <Content Include="Templates\AC-WVDGuidance\ProjectTemplate.json" />
+    <Content Include="Templates\AC-WVDGuidance\ServiceEndpoints\WVD Guidance-code.json" />
+    <Content Include="Templates\AC-WVDGuidance\TeamArea.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\Teams.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\WVD Guidance Team\BoardColumns.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\WVD Guidance Team\BoardRows.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\WVD Guidance Team\CardFields.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\WVD Guidance Team\CardStyles.json" />
+    <Content Include="Templates\AC-WVDGuidance\Teams\WVD Guidance Team\TeamSetting.json" />
+    <Content Include="Templates\AC-WVDGuidance\WorkItems\Task.json" />
+    <Content Include="Templates\AC-WVDGuidance\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Dashboard\Queries\All Workitems.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Windows Virtual Desktop Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Windows Virtual Desktop Team\BoardRows.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Windows Virtual Desktop Team\CardFields.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Windows Virtual Desktop Team\CardStyles.json" />
+    <Content Include="Templates\CAF-WindowsVirtualDesktop\Teams\Windows Virtual Desktop Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Extensions.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\ImportSourceCode\Knowledge Mining Solution on Azure.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Iterations.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\ProjectSettings.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\ServiceEndpoints\Knowledge Mining Solution on Azure-code.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\TeamArea.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Knowledge Mining Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Knowledge Mining Team\BoardRows.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Knowledge Mining Team\CardFields.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Knowledge Mining Team\CardStyles.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Knowledge Mining Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\Teams\Teams.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-KnowledgeMining\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\SQL Proj - Azure BG Test Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\SQL Proj - Azure BG Test Team\BoardRows.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\SQL Proj - Azure BG Test Team\CardFields.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\SQL Proj - Azure BG Test Team\CardStyles.json" />
+    <Content Include="Templates\CAF-SQL_Migration\Teams\SQL Proj - Azure BG Test Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance Team\BoardRows.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance Team\CardFields.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance Team\CardStyles.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-AzureGovernance\WorkItems\Epic.json" />
+    <Content Include="Templates\Gen-SmartHotel360\BoardRowsFromTemplate.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\ImportSourceCode\Modern Data Warehouse.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Iterations.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\ProjectSettings.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\ServiceEndpoints\Modern Data Warehouse-code.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\TeamArea.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Modern Data Warehouse Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Modern Data Warehouse Team\BoardRows.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Modern Data Warehouse Team\CardFields.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Modern Data Warehouse Team\CardStyles.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Modern Data Warehouse Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\Teams\Teams.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-ModernDataWarehouse\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\ImportSourceCode\Retail Recommender - Solution Accelerator.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Iterations.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\ProjectSettings.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\ServiceEndpoints\Retail Recommender - Solution Accelerator-code.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\TeamArea.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Retail Recommender - Solution Accelerator Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Retail Recommender - Solution Accelerator Team\BoardRows.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Retail Recommender - Solution Accelerator Team\CardFields.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Retail Recommender - Solution Accelerator Team\CardStyles.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Retail Recommender - Solution Accelerator Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\Teams\Teams.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-RetailRecommender-SolutionAccelerator\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-ModernIOT\ImportSourceCode\Modern IOT.json" />
+    <Content Include="Templates\CAF-ModernIOT\Iterations.json" />
+    <Content Include="Templates\CAF-ModernIOT\ProjectSettings.json" />
+    <Content Include="Templates\CAF-ModernIOT\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-ModernIOT\ServiceEndpoints\Modern IOT-code.json" />
+    <Content Include="Templates\CAF-ModernIOT\TeamArea.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Modern IOT Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Modern IOT Team\BoardRows.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Modern IOT Team\CardFields.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Modern IOT Team\CardStyles.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Modern IOT Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-ModernIOT\Teams\Teams.json" />
+    <Content Include="Templates\CAF-ModernIOT\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-ModernIOT\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-ModernIOT\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-ModernIOT\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance - CAF Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance - CAF Team\BoardRows.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance - CAF Team\CardFields.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance - CAF Team\CardStyles.json" />
+    <Content Include="Templates\CAF-AzureGovernance\Teams\Azure Governance - CAF Team\TeamSetting.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP on SQL Server.json" />
+    <Content Include="Templates\AC-SapOnAzure\ImportSourceCode\SAP on Azure quick-start guide.json" />
+    <Content Include="Templates\AC-SapOnAzure\Iterations.json" />
+    <Content Include="Templates\AC-SapOnAzure\ProjectSettings.json" />
+    <Content Include="Templates\AC-SapOnAzure\ProjectTemplate.json" />
+    <Content Include="Templates\AC-SapOnAzure\ServiceEndpoints\SAP on Azure quick-start guide-code.json" />
+    <Content Include="Templates\AC-SapOnAzure\TeamArea.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\SAP on Azure quick-start guide Team\BoardColumns.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\SAP on Azure quick-start guide Team\BoardRows.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\SAP on Azure quick-start guide Team\CardFields.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\SAP on Azure quick-start guide Team\CardStyles.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\SAP on Azure quick-start guide Team\TeamSetting.json" />
+    <Content Include="Templates\AC-SapOnAzure\Teams\Teams.json" />
+    <Content Include="Templates\AC-SapOnAzure\WorkItems\Task.json" />
+    <Content Include="Templates\AC-SapOnAzure\WorkItems\User Story.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Dashboard.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP Integration and Data.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP on HANA.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP on MaxDB.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP on Oracle.json" />
+    <Content Include="Templates\AC-SapOnAzure\Dashboard\Queries\SAP on SAP ASE.json" />
+    <Content Include="Templates\CAF-SecureResearch\ImportSourceCode\Secure Research.json" />
+    <Content Include="Templates\CAF-SecureResearch\Iterations.json" />
+    <Content Include="Templates\CAF-SecureResearch\ProjectSettings.json" />
+    <Content Include="Templates\CAF-SecureResearch\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-SecureResearch\ServiceEndpoints\Secure Research-code.json" />
+    <Content Include="Templates\CAF-SecureResearch\TeamArea.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Secure Research Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Secure Research Team\BoardRows.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Secure Research Team\CardFields.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Secure Research Team\CardStyles.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Secure Research Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-SecureResearch\Teams\Teams.json" />
+    <Content Include="Templates\CAF-SecureResearch\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-SecureResearch\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-SecureResearch\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-SecureResearch\WorkItems\User Story.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\ImportSourceCode\SAP on Azure.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Iterations.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\ProjectSettings.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\ServiceEndpoints\SAP on Azure-code.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\TeamArea.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Teams.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Unified Data Governance Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Unified Data Governance Team\BoardRows.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Unified Data Governance Team\CardFields.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Unified Data Governance Team\CardStyles.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\Teams\Unified Data Governance Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-UnifiedDataGovernance\WorkItems\User Story.json" />
+    <Content Include="Templates\DL-Keyvault\BuildDefinitions\azure-key-vault.json" />
+    <Content Include="Templates\DL-Keyvault\ImportSourceCode\azure-key-vault.json" />
+    <Content Include="Templates\DL-Keyvault\ServiceEndpoints\azure-key-vault-code.json" />
+    <Content Include="Templates\DL-PHP\BuildDefinitions\php-yaml.json" />
+    <Content Include="Templates\DL-PHP\BuildDefinitions\PHP.json" />
+    <Content Include="Templates\DL-PHP\Dashboard\Dashboard.json" />
+    <Content Include="Templates\DL-PHP\ImportSourceCode\php.json" />
+    <Content Include="Templates\DL-PHP\Iterations.json" />
+    <Content Include="Templates\DL-PHP\ProjectSettings.json" />
+    <Content Include="Templates\DL-PHP\ProjectTemplate.json" />
+    <Content Include="Templates\DL-PHP\ReleaseDefinitions\PHP.json" />
+    <Content Include="Templates\DL-PHP\ServiceEndpoints\GitHub-018337e3-EndPoint.json" />
+    <Content Include="Templates\DL-PHP\ServiceEndpoints\php-code.json" />
+    <Content Include="Templates\DL-PHP\ServiceEndpoints\ARM-Subscription.json" />
+    <Content Include="Templates\DL-PHP\TeamArea.json" />
+    <Content Include="Templates\DL-PHP\Teams\php Team\BoardColumns.json" />
+    <Content Include="Templates\DL-PHP\Teams\php Team\BoardRows.json" />
+    <Content Include="Templates\DL-PHP\Teams\php Team\CardFields.json" />
+    <Content Include="Templates\DL-PHP\Teams\php Team\CardStyles.json" />
+    <Content Include="Templates\DL-PHP\Teams\php Team\TeamSetting.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-PHP\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-PHP\Teams\Teams.json" />
+    <Content Include="Templates\DL-PHP\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-PHP\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-PHP\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DL-PHP\WorkItems\Task.json" />
+    <Content Include="Templates\DL-Python\Teams\Python Team\BoardColumns.json" />
+    <Content Include="Templates\DL-Python\Teams\Python Team\BoardRows.json" />
+    <Content Include="Templates\DL-Python\Teams\Python Team\CardFields.json" />
+    <Content Include="Templates\DL-Python\Teams\Python Team\CardStyles.json" />
+    <Content Include="Templates\DL-Python\Teams\Python Team\TeamSetting.json" />
+    <Content Include="Templates\DL-Python\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-Python\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-Python\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-Python\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-Python\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-Python\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-Python\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-Python\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-Python\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-Python\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-Python\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Test-bicep\BuildDefinitions\toy-website-test.json" />
+    <Content Include="Templates\MSL-Test-bicep\ImportSourceCode\toy-website-test.json" />
+    <Content Include="Templates\MSL-Test-bicep\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Test-bicep\ProjectTemplate.json" />
+    <Content Include="Templates\DL-Python\BuildDefinitions\PythonDjango-yaml.json" />
+    <Content Include="Templates\DL-Python\ReleaseDefinitions\Python-CD.json" />
+    <Content Include="Templates\Gen-MyShuttle\BuildDefinitions\MyShuttle-Docker-yaml.json" />
+    <Content Include="Templates\Gen-MyShuttle\BuildDefinitions\MyShuttle-yaml.json" />
+    <Content Include="Templates\Gen-MyShuttle\ReleaseDefinitions\MyShuttleRelease.json" />
+    <Content Include="Templates\Gen-MyShuttle\Extensions.json" />
+    <Content Include="Templates\Gen-MyShuttle\ProjectSettings.json" />
+    <Content Include="Templates\Gen-MyShuttle\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-MyShuttle\TeamArea.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\MyShuttle Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\MyShuttle Team\BoardRows.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\MyShuttle Team\CardFields.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\MyShuttle Team\CardStyles.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\MyShuttle Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\Gen-MyShuttle\Teams\Teams.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Bug.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Feature.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Task.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Test Case.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Test Plan.json" />
+    <Content Include="Templates\Gen-MyShuttle\WorkItems\Test Suite.json" />
+    <Content Include="Templates\DL-AKS\BuildDefinitions\MyHealthAKSbuild-YAML.json" />
+    <Content Include="Templates\DL-AKS\Teams\Azure Kubernetes Service Team\BoardColumns.json" />
+    <Content Include="Templates\DL-AKS\Teams\Azure Kubernetes Service Team\BoardRows.json" />
+    <Content Include="Templates\DL-AKS\Teams\Azure Kubernetes Service Team\CardFields.json" />
+    <Content Include="Templates\DL-AKS\Teams\Azure Kubernetes Service Team\CardStyles.json" />
+    <Content Include="Templates\DL-AKS\Teams\Azure Kubernetes Service Team\TeamSetting.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-AKS\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-AKS\Teams\Teams.json" />
+    <Content Include="Templates\DL-AKS\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-AKS\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-AKS\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DL-AKS\WorkItems\Task.json" />
+    <Content Include="Templates\DL-AKS\ProjectSettings.json" />
+    <Content Include="Templates\DL-AKS\ProjectTemplate.json" />
+    <Content Include="Templates\DL-AKS\TeamArea.json" />
+    <Content Include="Templates\DL-AzureFunctions\BuildDefinitions\AzureFunctions_CI-YAML.json" />
+    <Content Include="Templates\DL-AzureFunctions\Iterations.json" />
+    <Content Include="Templates\DL-AzureFunctions\ProjectSettings.json" />
+    <Content Include="Templates\DL-AzureFunctions\ProjectTemplate.json" />
+    <Content Include="Templates\DL-AzureFunctions\TeamArea.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Azure Functions Team\BoardColumns.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Azure Functions Team\BoardRows.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Azure Functions Team\CardFields.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Azure Functions Team\CardStyles.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Azure Functions Team\TeamSetting.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-AzureFunctions\Teams\Teams.json" />
+    <Content Include="Templates\DL-AzureFunctions\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-AzureFunctions\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-Docker\BuildDefinitions\MHCDockerbuild-YAML.json" />
+    <Content Include="Templates\DL-Docker\Teams\Docker Team\BoardColumns.json" />
+    <Content Include="Templates\DL-Docker\Teams\Docker Team\BoardRows.json" />
+    <Content Include="Templates\DL-Docker\Teams\Docker Team\CardFields.json" />
+    <Content Include="Templates\DL-Docker\Teams\Docker Team\CardStyles.json" />
+    <Content Include="Templates\DL-Docker\Teams\Docker Team\TeamSetting.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-Docker\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-Docker\Teams\Teams.json" />
+    <Content Include="Templates\DL-Docker\WorkItems\Epic.json" />
+    <Content Include="Templates\DL-Docker\WorkItems\Feature.json" />
+    <Content Include="Templates\DL-Docker\WorkItems\Product Backlog Item.json" />
+    <Content Include="Templates\DL-Docker\WorkItems\Task.json" />
+    <Content Include="Templates\DL-Ansible\BuildDefinitions\Ansible-CI-YAML.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Ansible Team\BoardColumns.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Ansible Team\BoardRows.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Ansible Team\CardFields.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Ansible Team\CardStyles.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Ansible Team\TeamSetting.json" />
+    <Content Include="Templates\DL-Ansible\Teams\Teams.json" />
+    <Content Include="Templates\DL-Terraform\BuildDefinitions\Terraform-CI-YAML.json" />
+    <Content Include="Templates\DL-Selenium\BuildDefinitions\Selenium-YAML.json" />
+    <Content Include="Templates\DL-Selenium\Teams\Teams.json" />
+    <Content Include="Templates\DL-ReleaseGates\BuildDefinitions\PartsUnlimited-CI-YAML.json" />
+    <Content Include="Templates\DL-ReleaseGates\WorkItems\Bug.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\ReleaseGates Team\BoardColumns.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\ReleaseGates Team\BoardRows.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\ReleaseGates Team\CardFields.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\ReleaseGates Team\CardStyles.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\ReleaseGates Team\TeamSetting.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-ReleaseGates\Teams\Teams.json" />
+    <Content Include="Templates\DL-LaunchDarkly\BuildDefinitions\LaunchDarkly-CI-YAML.json" />
+    <Content Include="Templates\DL-SonarQube\BuildDefinitions\SonarQube-CI.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\SonarQube Team\BoardColumns.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\SonarQube Team\BoardRows.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\SonarQube Team\CardFields.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\SonarQube Team\CardStyles.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\SonarQube Team\TeamSetting.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-SonarQube\Teams\Teams.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\BuildDefinitions\WhiteSourceBolt-YAML.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team1\BoardColumns.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team1\BoardRows.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team1\CardFields.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team1\CardStyles.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team1\TeamSetting.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team2\BoardColumns.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team2\BoardRows.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team2\CardFields.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team2\CardStyles.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Team2\TeamSetting.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\Teams.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\WhiteSource Bolt Team\BoardColumns.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\WhiteSource Bolt Team\BoardRows.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\WhiteSource Bolt Team\CardFields.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\WhiteSource Bolt Team\CardStyles.json" />
+    <Content Include="Templates\DL-WhiteSource-Bolt\Teams\WhiteSource Bolt Team\TeamSetting.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\BuildDefinitions\toy-website-environments.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\ImportSourceCode\toy-website-environments.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\Iterations.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\ProjectSettings.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\ProjectTemplate.json" />
+    <Content Include="Templates\Manage-multiple-environments-azure-pipelines\TeamArea.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\BuildDefinitions\toy-website-end-to-end.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\ImportSourceCode\toy-website-end-to-end.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\Iterations.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\ProjectSettings.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\TeamArea.json" />
+    <Content Include="Templates\MSL-manage-end-end-deployment-scenarios\VariableGroups\VariableGroup.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\ImportSourceCode\Modern Data Analytics.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Iterations.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\ProjectSettings.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\ProjectTemplate.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\ServiceEndpoints\Modern Data Analytics-code.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\TeamArea.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Modern Data Analytics Team\BoardColumns.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Modern Data Analytics Team\BoardRows.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Modern Data Analytics Team\CardFields.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Modern Data Analytics Team\CardStyles.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Modern Data Analytics Team\TeamSetting.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\Teams\Teams.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\WorkItems\Epic.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\WorkItems\Feature.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\WorkItems\Task.json" />
+    <Content Include="Templates\CAF-ModernDataAnalytics\WorkItems\User Story.json" />
+    <Content Include="Scripts\jquery-1.12.4.min.map" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\ImportSourceCode\toy-website-review.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Iterations.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\TeamArea.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Teams\toy-website-review Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Teams\toy-website-review Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Teams\toy-website-review Team\CardFields.json" />
+    <Content Include="Templates\MSL-Review-azure-infrastructure-changes\Teams\toy-website-review Team\CardStyles.json" />
+    <Content Include="Templates\MSL-Toy-reusable\BuildDefinitions\module-storage-account.json" />
+    <Content Include="Templates\MSL-Toy-reusable\BuildDefinitions\template-spec-linux-app-service.json" />
+    <Content Include="Templates\MSL-Toy-reusable\ImportSourceCode\toy-reusable.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Iterations.json" />
+    <Content Include="Templates\MSL-Toy-reusable\ProjectSettings.json" />
+    <Content Include="Templates\MSL-Toy-reusable\ProjectTemplate.json" />
+    <Content Include="Templates\MSL-Toy-reusable\TeamArea.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Teams\Teams.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Teams\toy-reusable Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Teams\toy-reusable Team\BoardRows.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Teams\toy-reusable Team\CardFields.json" />
+    <Content Include="Templates\MSL-Toy-reusable\Teams\toy-reusable Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game - web - Delivery plans Team\BoardColumns.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game - web - Delivery plans Team\BoardRows.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game - web - Delivery plans Team\CardFields.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game - web - Delivery plans Team\CardStyles.json" />
+    <Content Include="Templates\MSL-SpaceGame-DeliveryPlans\Teams\Space Game - web - Delivery plans Team\TeamSetting.json" />
+    <Content Include="Templates\FA-IAC-migration\BuildDefinitions\Bicep-Migration-Pipeline.json" />
+    <Content Include="Templates\FA-IAC-migration\BuildDefinitions\Prod-Migration-Wave-Pipeline.json" />
+    <Content Include="Templates\FA-IAC-migration\BuildDefinitions\Test-Migration-Pipeline.json" />
+    <Content Include="Templates\FA-IAC-migration\ImportSourceCode\IaC Migration.json" />
+    <Content Include="Templates\FA-IAC-migration\Iterations.json" />
+    <Content Include="Templates\FA-IAC-migration\ProjectSettings.json" />
+    <Content Include="Templates\FA-IAC-migration\ProjectTemplate.json" />
+    <Content Include="Templates\FA-IAC-migration\ServiceEndpoints\GitHub-fafc3095-EndPoint.json" />
+    <Content Include="Templates\FA-IAC-migration\TeamArea.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\Teams.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\TestTemplate Team\BoardColumns.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\TestTemplate Team\BoardRows.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\TestTemplate Team\CardFields.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\TestTemplate Team\CardStyles.json" />
+    <Content Include="Templates\FA-IAC-migration\Teams\TestTemplate Team\TeamSetting.json" />
+    <Content Include="Templates\FA-IAC-migration\VariableGroups\VariableGroup.json" />
+    <Content Include="Templates\FA-IAC-migration\WorkItems\Epic.json" />
+    <Content Include="Templates\FA-IAC-migration\WorkItems\Task.json" />
+    <Content Include="Templates\FA-IAC-migration\WorkItems\User Story.json" />
+    <Content Include="Templates\FA-IAC-migration\ImportSourceCode\GitRepository.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Dashboard.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\All Items.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\Critical Bugs.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\Feedback.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\Test Case-Readiness.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\UnfinishedWork.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\User Stories.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\Queries\Work in Progress.json" />
+    <Content Include="Templates\Gen-PartsUnlimited\Dashboard\WidgetQuery.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\BranchPolicy\BuildPolicy.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\BranchPolicy\WorkItemLinkPolicy.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\BuildDefinitions\eShoponweb-Yaml.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Dashboard.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\All Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\All Epics.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\All Features.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\All Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\All User Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\AllWorkofAppdevTeam.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\AppDevelopmentTeam Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\AppDevTeam Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\Test Cases.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\App Development Team\Queries\TestcaseinDesignState.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Dashboard.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Active Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Active Epic.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Active Feature.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Active Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Active Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All Epics.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All Features.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All User Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\All workitems.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\AllWorkofAppdevTeam.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\AppDevelopmentTeam Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\AppDevTeam Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Assigned to me.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Bugs By Priority.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Bugs By Severity.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Closed Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Closed Epic.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Closed Feature.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Closed Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Closed Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\DBATeam-All work.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Epics.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Features.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Followed work items.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\New Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\New Epic.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\New Feature.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\New Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\New Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Resolved Bugs.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Tasks.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\Test Cases.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\TestcaseinDesignState.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Dashboard\Queries\User Stories.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\DeliveryPlans\App-DB features.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\DeliveryPlans\DevelopmentPlan.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\ImportSourceCode\eShopOnWeb.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Iterations.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\ProjectSettings.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\ProjectTemplate.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\ServiceEndpoints\eShoponweb-code.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\TeamArea.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\App Development Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\App Development Team\BoardRows.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\App Development Team\CardFields.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\App Development Team\CardStyles.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\App Development Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\DBA Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\DBA Team\BoardRows.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\DBA Team\CardFields.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\DBA Team\CardStyles.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\DBA Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\BoardColumns.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\BoardRows.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\CardFields.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\CardStyles.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\IncludeSubAreas.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\eShoponweb Team\TeamSetting.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\Teams\Teams.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\TestPlans\TestPlan.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\TestPlans\TestSuites\TestPlan.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Bug.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Epic.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Feature.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Shared Steps.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Task.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\Test Case.json" />
+    <Content Include="Templates\Gen-eShopOnWeb\WorkItems\User Story.json" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Account\Verify.cshtml" />
+    <Content Include="Views\Environment\Create.cshtml" />
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\Home\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="assets\script\" />
+    <Folder Include="Content\assets\script\" />
+    <Folder Include="ExtractedTemplate\" />
+    <Folder Include="ExtractedZipFile\" />
+    <Folder Include="Log\" />
+    <Folder Include="PrivateTemplates\" />
+    <Folder Include="TemplateBackUp\" />
+    <Folder Include="Templates\DL-GitHub\Dashboard\Charts\" />
+    <Folder Include="Templates\DL-GitHub\Dashboard\Widgets\" />
+    <Folder Include="Templates\DL-LaunchDarkly\Dashboard\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VstsRestAPI\VstsRestAPI.csproj">
+      <Project>{720825c0-f4f3-44f3-9492-3bc4c967034d}</Project>
+      <Name>VstsRestAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>
