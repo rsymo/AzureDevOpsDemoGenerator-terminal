@@ -60,6 +60,103 @@ For full documentation, see the example script and run `--help`:
 ./import-ado-template.sh --help
 ```
 
+## 📦 Public GitHub Templates (Fully Accessible)
+
+These templates use public GitHub repositories and work perfectly:
+
+| Template | Repository | Description |
+|----------|-----------|-------------|
+| **FA-IAC-migration** | [GitHub](https://github.com/amillerb/fta-live-devops-iac-migration-src) | Infrastructure as Code migration patterns |
+| **Gen-Tailwind Traders** | [Backend](https://github.com/Microsoft/TailwindTraders-Backend) / [Website](https://github.com/Microsoft/TailwindTraders-Website) | E-commerce demo application |
+| **MSL-Review-azure-infrastructure-changes** | [GitHub](https://github.com/MicrosoftDocs/mslearn-review-azure-infrastructure-changes-using-bicep-pull-requests) | Bicep PR review workflows |
+| **MSL-Test-bicep** | [GitHub](https://github.com/MicrosoftDocs/mslearn-test-bicep-code-using-azure-pipelines) | Testing Bicep code with pipelines |
+| **MSL-Toy-reusable** | [GitHub](https://github.com/MicrosoftDocs/mslearn-publish-reusable-bicep-code-using-azure-pipelines) | Publishing reusable Bicep modules |
+| **MSL-manage-end-end-deployment-scenarios** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-end-end-deployment-scenarios-using-bicep-azure-pipelines) | End-to-end Bicep deployments |
+| **Manage-multiple-environments-azure-pipelines** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-multiple-environments-using-bicep-azure-pipelines) | Multi-environment Bicep workflows |
+
+## 📋 Complete Template Feature Matrix
+
+<details>
+<summary><b>Click to expand - All 71 Templates with Feature Comparison</b></summary>
+
+| Template | Work Items | Source Code | Builds | Releases | Wiki | Dashboard | Queries | Test Plans | PRs | Repo Access |
+|----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **AC-AzureSentinel** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **AC-NIST800171Rev2** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **AC-SapOnAzure** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **AC-WVDGuidance** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-ADO-Strategy-Plan-Ready-Governance** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-AKS_CAF** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-AzureGovernance** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-CloudAdoptionPlan** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-KnowledgeMining** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-ModernDataAnalytics** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-ModernDataWarehouse** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-ModernIOT** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-RetailRecommender-SolutionAccelerator** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-SQL_Migration** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-SecureResearch** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-ServerMigration** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-UnifiedDataGovernance** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **CAF-WindowsVirtualDesktop** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **ContosoShuttle / ContosoShuttle2** | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-AKS** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Ansible** | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-AzureFunctions** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-DeploymentGroups** | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Docker** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-GitHub** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Keyvault** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-LaunchDarkly** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-MachineLearning** | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Octopus** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-PHP** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Python** | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-ReleaseGates** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Selenium** | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-SonarQube** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-Terraform** | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DL-WhiteSource-Bolt** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **DoJoWhiteBeltGold** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **FA-IAC-migration** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **Gen-ContosoAir** | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | N/A |
+| **Gen-MyHealthClinic** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | 🔒 Private |
+| **Gen-MyShuttle** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | 🔒 Private |
+| **Gen-PartsUnlimited** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔒 Private |
+| **Gen-PartsUnlimited-YAML** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **Gen-SmartHotel360** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ✅ | ✅ | 🔒 Private |
+| **Gen-Tailwind Traders** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **Gen-eShopOnWeb** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | 🔒 Private |
+| **MSL-Create-Build-Pipeline** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Deploy-Docker-Template** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Deploy-Kubernetes-Template** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Host-Build-Agent** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Implement-Code-Workflow** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Manage-Build-Dependencies** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Review-azure-infrastructure-changes** | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **MSL-Run-Quality-Tests** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Scan-Open-Source** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Scan-for-Vulnerabilities** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-SpaceGame-*** (12 templates) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | 🔒 Private |
+| **MSL-Test-bicep** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **MSL-Toy-reusable** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **MSL-manage-end-end-deployment-scenarios** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+| **Manage-multiple-environments-azure-pipelines** | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ **Public** |
+
+</details>
+
+### Legend:
+- ✅ = Feature included in template
+- ❌ = Feature not included
+- 🔒 Private = Requires access to private Azure DevOps org
+- ✅ **Public** = Public GitHub repository (fully accessible)
+- N/A = No source code repository defined
+
+### Repository Access Notes:
+
+**Work without source code:**
+All templates work fine without source code access. The script creates full project structure (work items, sprints, dashboards, wiki). You can push your own code to the created repositories.
+
 ## Credits
 
 Templates sourced from [Azure DevOps Demo Generator](https://azuredevopsdemogenerator.azurewebsites.net/)
