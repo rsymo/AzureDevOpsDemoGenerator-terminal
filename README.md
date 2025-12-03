@@ -14,18 +14,6 @@ A powerful command-line tool that imports complete Azure DevOps demo projects fr
 - ✅ Wiki pages
 - ✅ Work item queries
 
-**Secure Azure CLI Authentication:**
-- 🔐 No need to manage Personal Access Tokens (PATs)
-- 🔐 Uses your existing Azure CLI login
-- 🔐 Tokens are automatically refreshed
-- 🔐 No credentials stored in scripts or environment variables
-
-**Secure Azure CLI Authentication:**
-- 🔐 No need to manage Personal Access Tokens (PATs)
-- 🔐 Uses your existing Azure CLI login
-- 🔐 Tokens are automatically refreshed
-- 🔐 No credentials stored in scripts or environment variables
-
 **71+ Templates Including:**
 - ContosoShuttle2, Gen-PartsUnlimited
 - Docker, Python, Node.js demos
