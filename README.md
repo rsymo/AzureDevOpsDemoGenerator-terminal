@@ -14,6 +14,18 @@ A powerful command-line tool that imports complete Azure DevOps demo projects fr
 - ✅ Wiki pages
 - ✅ Work item queries
 
+**Secure Azure CLI Authentication:**
+- 🔐 No need to manage Personal Access Tokens (PATs)
+- 🔐 Uses your existing Azure CLI login
+- 🔐 Tokens are automatically refreshed
+- 🔐 No credentials stored in scripts or environment variables
+
+**Secure Azure CLI Authentication:**
+- 🔐 No need to manage Personal Access Tokens (PATs)
+- 🔐 Uses your existing Azure CLI login
+- 🔐 Tokens are automatically refreshed
+- 🔐 No credentials stored in scripts or environment variables
+
 **71+ Templates Including:**
 - ContosoShuttle2, Gen-PartsUnlimited
 - Docker, Python, Node.js demos
@@ -23,21 +35,24 @@ A powerful command-line tool that imports complete Azure DevOps demo projects fr
 ## Quick Start
 
 ```bash
-# List templates
+# 1. Login to Azure CLI (one-time setup)
+az login
+
+# 2. List templates
 ./import-ado-template.sh --list
 
-# Import a template
+# 3. Import a template
 export ADO_ORG="your-org"
-export ADO_PAT="your-pat"
 ./import-ado-template.sh -n "MyProject" -t "Gen-PartsUnlimited" -y
 ```
 
 ## Prerequisites
 
-- macOS
-- Git, curl, jq (pre-installed on macOS)
-- Azure DevOps organization
-- Personal Access Token with Full Access
+- **macOS** (tested on modern versions)
+- **Azure CLI** - Install from [https://aka.ms/azure-cli](https://aka.ms/azure-cli)
+- **Git, curl, jq** - Pre-installed on macOS
+- **Azure DevOps organization**
+- **Azure CLI logged in** - Run `az login`
 
 See [example-import.sh](example-import.sh) for more usage examples.
 

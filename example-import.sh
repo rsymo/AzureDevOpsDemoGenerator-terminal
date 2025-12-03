@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Example: Import Azure DevOps templates using the local import script
+# Example: Import Azure DevOps templates using Azure CLI authentication
 # This script shows different ways to use the import-ado-template.sh script
 
 echo "=========================================="
@@ -8,9 +8,16 @@ echo "Azure DevOps Template Import Examples"
 echo "=========================================="
 echo ""
 
-# Set your credentials (DO NOT commit these to version control!)
+# Prerequisites: Login to Azure CLI
+echo "Step 1: Login to Azure CLI"
+echo "============================"
+echo "Run: az login"
+echo ""
+echo "You only need to do this once. The script will use your Azure CLI session."
+echo ""
+
+# Set your organization
 export ADO_ORG="your-org-name"
-export ADO_PAT="your-personal-access-token-here"
 
 # Method 1: List available templates
 echo "Method 1: List all available templates"
@@ -62,7 +69,6 @@ echo "Method 5: Environment variables"
 echo "==============================="
 cat << 'EOF'
 export ADO_ORG="your-org"
-export ADO_PAT="your-pat"
 
 ./import-ado-template.sh \
   --name "MyProject" \
