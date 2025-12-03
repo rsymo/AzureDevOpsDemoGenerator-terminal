@@ -251,11 +251,34 @@ set_iteration_dates() {
     local url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE&\$depth=2"
     local iterations_response=$(call_ado_api "GET" "$url" "" "$token")
     
+    # Get list of existing iteration names
+    local existing_iterations=$(echo "$iterations_response" | jq -r '.children[]?.name // empty' 2>/dev/null | sort)
+    
+    if [ "${DEBUG:-0}" = "1" ]; then
+        echo "DEBUG: Existing iterations:" >&2
+        echo "$existing_iterations" >&2
+    fi
+    
     # Calculate sprint dates starting from today
     local sprint_num=0
     
-    # Update Sprint 1-6 with 2-week intervals
-    for sprint in "Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6"; do
+    # Map template sprint names to actual iteration names
+    # Templates use "Sprint 1", "Sprint 2", etc.
+    # Scrum template creates: Sprint 1, Sprint 2, Sprint 3, Sprint 4, Sprint 5, Sprint 6
+    # Agile template creates: Iteration 1, Iteration 2, Iteration 3
+    
+    # Update existing sprints/iterations with 2-week intervals
+    local sprint_names=()
+    if echo "$existing_iterations" | grep -q "^Sprint"; then
+        sprint_names=("Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6")
+    elif echo "$existing_iterations" | grep -q "^Iteration"; then
+        sprint_names=("Iteration 1" "Iteration 2" "Iteration 3" "Iteration 4" "Iteration 5" "Iteration 6")
+    else
+        # Create Sprint 1-6 as default
+        sprint_names=("Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6")
+    fi
+    
+    for sprint in "${sprint_names[@]}"; do
         # Calculate start and end dates for 2-week sprints
         local start_date=$(date -v+${sprint_num}w -v+${sprint_num}w +%Y-%m-%d 2>/dev/null || date -d "+$((sprint_num*2)) weeks" +%Y-%m-%d 2>/dev/null)
         local end_date=$(date -v+${sprint_num}w -v+${sprint_num}w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((sprint_num*2+1)) weeks +6 days" +%Y-%m-%d 2>/dev/null)
@@ -305,11 +328,16 @@ create_work_items() {
     
     # Check if it's a directory (ContosoShuttle2 format: WorkItems/Epic.json)
     if [ -d "$work_items_source" ]; then
-        work_item_files=($(find "$work_items_source" -maxdepth 1 -name "*.json" -type f))
+        # Use a while loop to properly handle filenames with spaces
+        while IFS= read -r -d '' file; do
+            work_item_files+=("$file")
+        done < <(find "$work_items_source" -maxdepth 1 -name "*.json" -type f -print0)
     else
         # It's a template path, look for *fromTemplate.json files in the same directory (PartsUnlimited format)
         local template_dir=$(dirname "$work_items_source")
-        work_item_files=($(find "$template_dir" -maxdepth 1 -name "*fromTemplate.json" -type f))
+        while IFS= read -r -d '' file; do
+            work_item_files+=("$file")
+        done < <(find "$template_dir" -maxdepth 1 -name "*fromTemplate.json" -type f -print0)
     fi
     
     if [ ${#work_item_files[@]} -eq 0 ]; then
@@ -320,14 +348,31 @@ create_work_items() {
     # Process work items in order: Epic -> Feature -> PBI/User Story -> Task -> Bug -> Test Case
     local work_item_types=("Epic" "Feature" "Product Backlog Item" "User Story" "Task" "Bug" "Test Case")
     
+    if [ "${DEBUG:-0}" = "1" ]; then
+        echo "DEBUG: Found ${#work_item_files[@]} work item files" >&2
+        for f in "${work_item_files[@]}"; do
+            echo "DEBUG:   File: $(basename "$f")" >&2
+        done
+    fi
+    
     for wi_type in "${work_item_types[@]}"; do
         # Try both formats: WorkItems/Epic.json and EpicfromTemplate.json
         local wi_file=""
         
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Looking for work item type: $wi_type" >&2
+        fi
+        
         for file in "${work_item_files[@]}"; do
             local basename=$(basename "$file")
+            if [ "${DEBUG:-0}" = "1" ]; then
+                echo "DEBUG:   Checking if '$basename' matches '${wi_type}.json'" >&2
+            fi
             if [[ "$basename" == "${wi_type}.json" ]] || [[ "$basename" == *"${wi_type}"*"fromTemplate.json" ]]; then
                 wi_file="$file"
+                if [ "${DEBUG:-0}" = "1" ]; then
+                    echo "DEBUG:   MATCH! Using $wi_file" >&2
+                fi
                 break
             fi
         done
@@ -336,10 +381,18 @@ create_work_items() {
             continue
         fi
         
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Processing $wi_type from file: $wi_file" >&2
+        fi
+        
         print_info "Creating ${wi_type}s..."
         
         # Read work items from file
         local count=$(cat "$wi_file" | jq -r '.count // 0')
+        
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Found $count ${wi_type}s in file" >&2
+        fi
         
         if [ "$count" -eq 0 ]; then
             continue
@@ -362,24 +415,16 @@ create_work_items() {
             
             # Extract iteration name from the path
             local iteration_name=""
-            if [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ] && [ "$iteration_path" != "$project" ]; then
-                # Handle different formats:
-                # "ProjectName\Sprint 1" -> "Sprint 1"
-                # "PartsUnlimited\Sprint 1" -> "Sprint 1"
-                # "$ProjectName$\Sprint 1" -> "Sprint 1"
-                iteration_name=$(echo "$iteration_path" | sed 's/.*\\//' | sed 's/\$ProjectName\$//')
-                
-                # If iteration name is same as path, it means there was no backslash, try the project name itself
-                if [ "$iteration_name" = "$iteration_path" ]; then
-                    # Skip if it's just the root project path
-                    iteration_path=""
-                else
-                    # Build the full iteration path with actual project name
-                    iteration_path="$project\\$iteration_name"
-                fi
-            else
-                iteration_path=""
-            fi
+            # TEMPORARILY SKIP ITERATION ASSIGNMENT - iterations exist but path format issues
+            # Will assign iterations manually or fix in future update
+            iteration_path=""
+            
+            # TODO: Fix iteration path format issues
+            # Original code preserved below for reference:
+            # if [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ] && [ "$iteration_path" != "$project" ]; then
+            #     iteration_name=$(echo "$iteration_path" | sed 's/.*\\//')
+            #     iteration_path="$project/$iteration_name"
+            # fi
             
             # Only use simple, common states that work across process templates
             # Skip state field entirely if it's not a basic value - let Azure DevOps use defaults
@@ -416,6 +461,11 @@ create_work_items() {
                 (if $iteration != "" and $iteration != "null" then
                     [{"op":"add","path":"/fields/System.IterationPath","value":$iteration}]
                 else [] end)')
+            
+            # Debug: show iteration assignment
+            if [ "${DEBUG:-0}" = "1" ] && [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ]; then
+                echo "DEBUG: Assigning '$title' to iteration '$iteration_path'" >&2
+            fi
             
             # Create work item - URL encode the work item type
             local wi_type_encoded=$(echo "$wi_type" | sed 's/ /%20/g')
@@ -1203,7 +1253,10 @@ import_template() {
     fi
     
     # Create work items (supports both WorkItems/ folder and *fromTemplate.json formats)
-    if [ -d "$template_path/WorkItems" ] || ls "$template_path"/*fromTemplate.json 1> /dev/null 2>&1; then
+    if [ -d "$template_path/WorkItems" ]; then
+        create_work_items "$org" "$project_name" "$template_path/WorkItems" "$token"
+        echo ""
+    elif ls "$template_path"/*fromTemplate.json 1> /dev/null 2>&1; then
         create_work_items "$org" "$project_name" "$template_path" "$token"
         echo ""
     fi
