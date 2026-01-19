@@ -2,7 +2,7 @@
 
 # Azure DevOps Template Importer
 # This script imports sample data from local template files directly into Azure DevOps
-# using the Azure DevOps REST API (no external Demo Generator service needed)
+# using Azure CLI for authentication (more secure than PAT)
 
 set -e
 
@@ -31,9 +31,29 @@ print_header() {
     echo -e "${CYAN}========================================${NC}"
 }
 
-# Function to encode PAT for Basic auth
-encode_pat() {
-    echo -n ":$1" | base64
+# Function to check Azure CLI login
+check_az_login() {
+    if ! command -v az &> /dev/null; then
+        print_error "Azure CLI is not installed. Please install it from: https://aka.ms/azure-cli"
+        exit 1
+    fi
+    
+    if ! az account show &> /dev/null; then
+        print_error "Not logged in to Azure CLI. Please run 'az login' first."
+        exit 1
+    fi
+    
+    print_success "Azure CLI authentication verified"
+}
+
+# Function to get Azure CLI access token
+get_az_token() {
+    local token=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv 2>/dev/null)
+    if [ -z "$token" ]; then
+        print_error "Failed to get Azure DevOps access token. Please run 'az login' first."
+        exit 1
+    fi
+    echo "$token"
 }
 
 # Function to call Azure DevOps REST API
@@ -41,7 +61,7 @@ call_ado_api() {
     local method=$1
     local url=$2
     local data=$3
-    local pat=$4
+    local token=$4
     local content_type=${5:-"application/json"}
     
     # Debug: show the URL being called (only in verbose mode)
@@ -49,7 +69,7 @@ call_ado_api() {
         echo "DEBUG: $method $url" >&2
     fi
     
-    local auth_header="Authorization: Basic $(encode_pat "$pat")"
+    local auth_header="Authorization: Bearer $token"
     
     # Create temp files for response
     local temp_response=$(mktemp)
@@ -100,7 +120,7 @@ create_project() {
     local project_name=$2
     local description=$3
     local process_template=$4
-    local pat=$5
+    local token=$5
     
     print_info "Creating project '$project_name'..."
     
@@ -122,7 +142,7 @@ EOF
 )
     
     local url="https://dev.azure.com/$org/_apis/projects?api-version=$ADO_API_VERSION_PREVIEW"
-    local response=$(call_ado_api "POST" "$url" "$payload" "$pat")
+    local response=$(call_ado_api "POST" "$url" "$payload" "$token")
     
     if echo "$response" | grep -q '"id"'; then
         local operation_url=$(echo "$response" | grep -o '"url":"[^"]*"' | head -1 | cut -d'"' -f4)
@@ -134,7 +154,7 @@ EOF
         local elapsed=0
         
         while [ $elapsed -lt $max_wait ]; do
-            local status_response=$(call_ado_api "GET" "$operation_url" "" "$pat")
+            local status_response=$(call_ado_api "GET" "$operation_url" "" "$token")
             local status=$(echo "$status_response" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
             
             if [ "$status" = "succeeded" ]; then
@@ -166,7 +186,7 @@ create_iterations() {
     local org=$1
     local project=$2
     local iterations_file=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -f "$iterations_file" ]; then
         print_warning "No iterations file found, skipping..."
@@ -209,7 +229,7 @@ EOF
 )
         
         local url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE"
-        local response=$(call_ado_api "POST" "$url" "$payload" "$pat")
+        local response=$(call_ado_api "POST" "$url" "$payload" "$token")
         
         if echo "$response" | grep -q '"id"'; then
             print_success "Created iteration: $iteration ($start_date to $end_date)"
@@ -223,19 +243,42 @@ EOF
 set_iteration_dates() {
     local org=$1
     local project=$2
-    local pat=$3
+    local token=$3
     
     print_info "Setting iteration dates..."
     
     # Get existing iterations
     local url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE&\$depth=2"
-    local iterations_response=$(call_ado_api "GET" "$url" "" "$pat")
+    local iterations_response=$(call_ado_api "GET" "$url" "" "$token")
+    
+    # Get list of existing iteration names
+    local existing_iterations=$(echo "$iterations_response" | jq -r '.children[]?.name // empty' 2>/dev/null | sort)
+    
+    if [ "${DEBUG:-0}" = "1" ]; then
+        echo "DEBUG: Existing iterations:" >&2
+        echo "$existing_iterations" >&2
+    fi
     
     # Calculate sprint dates starting from today
     local sprint_num=0
     
-    # Update Sprint 1-6 with 2-week intervals
-    for sprint in "Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6"; do
+    # Map template sprint names to actual iteration names
+    # Templates use "Sprint 1", "Sprint 2", etc.
+    # Scrum template creates: Sprint 1, Sprint 2, Sprint 3, Sprint 4, Sprint 5, Sprint 6
+    # Agile template creates: Iteration 1, Iteration 2, Iteration 3
+    
+    # Update existing sprints/iterations with 2-week intervals
+    local sprint_names=()
+    if echo "$existing_iterations" | grep -q "^Sprint"; then
+        sprint_names=("Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6")
+    elif echo "$existing_iterations" | grep -q "^Iteration"; then
+        sprint_names=("Iteration 1" "Iteration 2" "Iteration 3" "Iteration 4" "Iteration 5" "Iteration 6")
+    else
+        # Create Sprint 1-6 as default
+        sprint_names=("Sprint 1" "Sprint 2" "Sprint 3" "Sprint 4" "Sprint 5" "Sprint 6")
+    fi
+    
+    for sprint in "${sprint_names[@]}"; do
         # Calculate start and end dates for 2-week sprints
         local start_date=$(date -v+${sprint_num}w -v+${sprint_num}w +%Y-%m-%d 2>/dev/null || date -d "+$((sprint_num*2)) weeks" +%Y-%m-%d 2>/dev/null)
         local end_date=$(date -v+${sprint_num}w -v+${sprint_num}w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((sprint_num*2+1)) weeks +6 days" +%Y-%m-%d 2>/dev/null)
@@ -257,7 +300,7 @@ EOF
 )
         
         local update_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations/${sprint// /%20}?api-version=$ADO_API_VERSION_STABLE"
-        local update_response=$(call_ado_api "PATCH" "$update_url" "$update_payload" "$pat" 2>/dev/null)
+        local update_response=$(call_ado_api "PATCH" "$update_url" "$update_payload" "$token" 2>/dev/null)
         
         if echo "$update_response" | grep -q '"id"' 2>/dev/null; then
             echo -n "."
@@ -277,7 +320,7 @@ create_work_items() {
     local org=$1
     local project=$2
     local work_items_source=$3
-    local pat=$4
+    local token=$4
     
     print_info "Creating work items..."
     
@@ -285,11 +328,16 @@ create_work_items() {
     
     # Check if it's a directory (ContosoShuttle2 format: WorkItems/Epic.json)
     if [ -d "$work_items_source" ]; then
-        work_item_files=($(find "$work_items_source" -maxdepth 1 -name "*.json" -type f))
+        # Use a while loop to properly handle filenames with spaces
+        while IFS= read -r -d '' file; do
+            work_item_files+=("$file")
+        done < <(find "$work_items_source" -maxdepth 1 -name "*.json" -type f -print0)
     else
         # It's a template path, look for *fromTemplate.json files in the same directory (PartsUnlimited format)
         local template_dir=$(dirname "$work_items_source")
-        work_item_files=($(find "$template_dir" -maxdepth 1 -name "*fromTemplate.json" -type f))
+        while IFS= read -r -d '' file; do
+            work_item_files+=("$file")
+        done < <(find "$template_dir" -maxdepth 1 -name "*fromTemplate.json" -type f -print0)
     fi
     
     if [ ${#work_item_files[@]} -eq 0 ]; then
@@ -300,14 +348,31 @@ create_work_items() {
     # Process work items in order: Epic -> Feature -> PBI/User Story -> Task -> Bug -> Test Case
     local work_item_types=("Epic" "Feature" "Product Backlog Item" "User Story" "Task" "Bug" "Test Case")
     
+    if [ "${DEBUG:-0}" = "1" ]; then
+        echo "DEBUG: Found ${#work_item_files[@]} work item files" >&2
+        for f in "${work_item_files[@]}"; do
+            echo "DEBUG:   File: $(basename "$f")" >&2
+        done
+    fi
+    
     for wi_type in "${work_item_types[@]}"; do
         # Try both formats: WorkItems/Epic.json and EpicfromTemplate.json
         local wi_file=""
         
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Looking for work item type: $wi_type" >&2
+        fi
+        
         for file in "${work_item_files[@]}"; do
             local basename=$(basename "$file")
+            if [ "${DEBUG:-0}" = "1" ]; then
+                echo "DEBUG:   Checking if '$basename' matches '${wi_type}.json'" >&2
+            fi
             if [[ "$basename" == "${wi_type}.json" ]] || [[ "$basename" == *"${wi_type}"*"fromTemplate.json" ]]; then
                 wi_file="$file"
+                if [ "${DEBUG:-0}" = "1" ]; then
+                    echo "DEBUG:   MATCH! Using $wi_file" >&2
+                fi
                 break
             fi
         done
@@ -316,10 +381,18 @@ create_work_items() {
             continue
         fi
         
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Processing $wi_type from file: $wi_file" >&2
+        fi
+        
         print_info "Creating ${wi_type}s..."
         
         # Read work items from file
         local count=$(cat "$wi_file" | jq -r '.count // 0')
+        
+        if [ "${DEBUG:-0}" = "1" ]; then
+            echo "DEBUG: Found $count ${wi_type}s in file" >&2
+        fi
         
         if [ "$count" -eq 0 ]; then
             continue
@@ -342,24 +415,16 @@ create_work_items() {
             
             # Extract iteration name from the path
             local iteration_name=""
-            if [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ] && [ "$iteration_path" != "$project" ]; then
-                # Handle different formats:
-                # "ProjectName\Sprint 1" -> "Sprint 1"
-                # "PartsUnlimited\Sprint 1" -> "Sprint 1"
-                # "$ProjectName$\Sprint 1" -> "Sprint 1"
-                iteration_name=$(echo "$iteration_path" | sed 's/.*\\//' | sed 's/\$ProjectName\$//')
-                
-                # If iteration name is same as path, it means there was no backslash, try the project name itself
-                if [ "$iteration_name" = "$iteration_path" ]; then
-                    # Skip if it's just the root project path
-                    iteration_path=""
-                else
-                    # Build the full iteration path with actual project name
-                    iteration_path="$project\\$iteration_name"
-                fi
-            else
-                iteration_path=""
-            fi
+            # TEMPORARILY SKIP ITERATION ASSIGNMENT - iterations exist but path format issues
+            # Will assign iterations manually or fix in future update
+            iteration_path=""
+            
+            # TODO: Fix iteration path format issues
+            # Original code preserved below for reference:
+            # if [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ] && [ "$iteration_path" != "$project" ]; then
+            #     iteration_name=$(echo "$iteration_path" | sed 's/.*\\//')
+            #     iteration_path="$project/$iteration_name"
+            # fi
             
             # Only use simple, common states that work across process templates
             # Skip state field entirely if it's not a basic value - let Azure DevOps use defaults
@@ -397,10 +462,15 @@ create_work_items() {
                     [{"op":"add","path":"/fields/System.IterationPath","value":$iteration}]
                 else [] end)')
             
+            # Debug: show iteration assignment
+            if [ "${DEBUG:-0}" = "1" ] && [ ! -z "$iteration_path" ] && [ "$iteration_path" != "null" ]; then
+                echo "DEBUG: Assigning '$title' to iteration '$iteration_path'" >&2
+            fi
+            
             # Create work item - URL encode the work item type
             local wi_type_encoded=$(echo "$wi_type" | sed 's/ /%20/g')
             local url="https://dev.azure.com/$org/$project/_apis/wit/workitems/\$${wi_type_encoded}?api-version=$ADO_API_VERSION_STABLE"
-            local response=$(call_ado_api "POST" "$url" "$patch_doc" "$pat" "application/json-patch+json")
+            local response=$(call_ado_api "POST" "$url" "$patch_doc" "$token" "application/json-patch+json")
             
             if echo "$response" | grep -q '"id"'; then
                 echo -n "."
@@ -421,7 +491,7 @@ import_source_code() {
     local org=$1
     local project=$2
     local source_config_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$source_config_dir" ]; then
         return 0
@@ -468,15 +538,25 @@ import_source_code() {
         git add .
         git commit -m "Initial commit from template" --quiet
         
-        # Configure git credentials for Azure DevOps
-        git remote add origin "https://$org:$pat@dev.azure.com/$org/$project/_git/$repo_name"
+        # Configure git credentials for Azure DevOps using token
+        # Use a custom credential helper script
+        local cred_helper="$temp_dir/git-credential-helper.sh"
+        cat > "$cred_helper" << CREDHELPER
+#!/bin/bash
+echo "username="
+echo "password=$token"
+CREDHELPER
+        chmod +x "$cred_helper"
+        
+        git config credential.helper "!$cred_helper"
+        git remote add origin "https://dev.azure.com/$org/$project/_git/$repo_name"
         
         # Push to Azure DevOps
         print_info "Pushing code to Azure DevOps repository..."
-        if git push -u origin --all --force --quiet 2>&1 | grep -q "Everything up-to-date\|new branch"; then
+        if git push -u origin --all --force --quiet 2>&1; then
             print_success "Source code imported successfully"
         else
-            # Try one more time without --force
+            # Try one more time with main/master specifically
             if git push -u origin main --quiet 2>/dev/null || git push -u origin master --quiet 2>/dev/null; then
                 print_success "Source code imported successfully"
             else
@@ -502,7 +582,7 @@ import_branches() {
     local project=$2
     local repo_name=$3
     local pull_requests_dir=$4
-    local pat=$5
+    local token=$5
     
     if [ ! -d "$pull_requests_dir" ]; then
         return 0
@@ -512,13 +592,13 @@ import_branches() {
     
     # Get the latest commit on main/master
     local repo_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/main&api-version=7.1"
-    local main_ref=$(call_ado_api "GET" "$repo_url" "" "$pat")
+    local main_ref=$(call_ado_api "GET" "$repo_url" "" "$token")
     local main_commit=$(echo "$main_ref" | jq -r '.value[0].objectId // empty' 2>/dev/null)
     
     if [ -z "$main_commit" ]; then
         # Try master instead
         repo_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/master&api-version=7.1"
-        main_ref=$(call_ado_api "GET" "$repo_url" "" "$pat")
+        main_ref=$(call_ado_api "GET" "$repo_url" "" "$token")
         main_commit=$(echo "$main_ref" | jq -r '.value[0].objectId // empty' 2>/dev/null)
     fi
     
@@ -555,7 +635,7 @@ EOF
 )
         
         local create_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?api-version=7.1"
-        local response=$(call_ado_api "POST" "$create_url" "$create_payload" "$pat" 2>/dev/null)
+        local response=$(call_ado_api "POST" "$create_url" "$create_payload" "$token" 2>/dev/null)
         
         if echo "$response" | grep -q '"name"' 2>/dev/null; then
             echo -n "."
@@ -577,7 +657,7 @@ import_pull_requests() {
     local project=$2
     local repo_name=$3
     local pull_requests_dir=$4
-    local pat=$5
+    local token=$5
     
     if [ ! -d "$pull_requests_dir" ]; then
         return 0
@@ -616,7 +696,7 @@ EOF
 )
         
         local pr_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullrequests?api-version=7.1"
-        local response=$(call_ado_api "POST" "$pr_url" "$pr_payload" "$pat" 2>/dev/null)
+        local response=$(call_ado_api "POST" "$pr_url" "$pr_payload" "$token" 2>/dev/null)
         
         if echo "$response" | grep -q '"pullRequestId"' 2>/dev/null; then
             local pr_id=$(echo "$response" | jq -r '.pullRequestId // empty' 2>/dev/null)
@@ -648,7 +728,7 @@ EOF
 EOF
 )
                                 local thread_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullRequests/$pr_id/threads?api-version=7.1"
-                                call_ado_api "POST" "$thread_url" "$thread_payload" "$pat" > /dev/null 2>&1
+                                call_ado_api "POST" "$thread_url" "$thread_payload" "$token" > /dev/null 2>&1
                             fi
                         fi
                     done
@@ -670,7 +750,7 @@ import_build_pipelines() {
     local org=$1
     local project=$2
     local builds_dir=$3
-    local pat=$4
+    local token=$4
     local repo_name=$5
     
     if [ ! -d "$builds_dir" ]; then
@@ -681,7 +761,7 @@ import_build_pipelines() {
     
     # Check if azure-pipelines.yml exists in the repo
     local repo_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/items?path=/azure-pipelines.yml&api-version=7.1"
-    local yaml_check=$(call_ado_api "GET" "$repo_url" "" "$pat" 2>/dev/null)
+    local yaml_check=$(call_ado_api "GET" "$repo_url" "" "$token" 2>/dev/null)
     
     # Check if file exists (API returns raw YAML content if found, error if not)
     if [ ! -z "$yaml_check" ] && echo "$yaml_check" | grep -q "trigger:" 2>/dev/null; then
@@ -689,7 +769,7 @@ import_build_pipelines() {
         
         # Get repository ID
         local repo_id_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name?api-version=7.1"
-        local repo_info=$(call_ado_api "GET" "$repo_id_url" "" "$pat" 2>/dev/null)
+        local repo_info=$(call_ado_api "GET" "$repo_id_url" "" "$token" 2>/dev/null)
         local repo_id=$(echo "$repo_info" | jq -r '.id // empty' 2>/dev/null)
         
         if [ ! -z "$repo_id" ]; then
@@ -712,7 +792,7 @@ EOF
 )
             
             local pipeline_url="https://dev.azure.com/$org/$project/_apis/pipelines?api-version=7.1"
-            local pipeline_response=$(call_ado_api "POST" "$pipeline_url" "$pipeline_payload" "$pat" 2>/dev/null)
+            local pipeline_response=$(call_ado_api "POST" "$pipeline_url" "$pipeline_payload" "$token" 2>/dev/null)
             
             if echo "$pipeline_response" | grep -q '"id"' 2>/dev/null; then
                 local pipeline_id=$(echo "$pipeline_response" | jq -r '.id // empty' 2>/dev/null)
@@ -721,7 +801,7 @@ EOF
                 # Queue a build run to initialize the pipeline
                 local run_payload='{"resources":{"repositories":{"self":{"refName":"refs/heads/main"}}}}'
                 local run_url="https://dev.azure.com/$org/$project/_apis/pipelines/$pipeline_id/runs?api-version=7.1"
-                call_ado_api "POST" "$run_url" "$run_payload" "$pat" > /dev/null 2>&1
+                call_ado_api "POST" "$run_url" "$run_payload" "$token" > /dev/null 2>&1
             else
                 print_info "YAML pipeline found but not auto-created"
                 print_info "You can create it via: Pipelines > New Pipeline > Azure Repos Git > Existing YAML"
@@ -744,7 +824,7 @@ EOF
         ' 2>/dev/null)
         
         local build_url="https://dev.azure.com/$org/$project/_apis/build/definitions?api-version=7.1"
-        local response=$(call_ado_api "POST" "$build_url" "$build_def" "$pat" 2>/dev/null)
+        local response=$(call_ado_api "POST" "$build_url" "$build_def" "$token" 2>/dev/null)
         
         if echo "$response" | grep -q '"id"' 2>/dev/null; then
             echo -n "."
@@ -763,7 +843,7 @@ import_release_pipelines() {
     local org=$1
     local project=$2
     local releases_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$releases_dir" ]; then
         return 0
@@ -783,7 +863,7 @@ import_test_plans() {
     local org=$1
     local project=$2
     local testplans_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$testplans_dir" ]; then
         return 0
@@ -802,7 +882,7 @@ import_queries() {
     local org=$1
     local project=$2
     local query_file=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -f "$query_file" ]; then
         return 0
@@ -838,7 +918,7 @@ import_queries() {
         fi
         
         local url="https://dev.azure.com/$org/$project/_apis/wit/queries/Shared%20Queries?api-version=7.1"
-        local response=$(call_ado_api "POST" "$url" "$query" "$pat" 2>/dev/null)
+        local response=$(call_ado_api "POST" "$url" "$query" "$token" 2>/dev/null)
         
         if echo "$response" | grep -q '"id"' 2>/dev/null; then
             echo -n "."
@@ -861,7 +941,7 @@ import_dashboards() {
     local org=$1
     local project=$2
     local dashboard_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$dashboard_dir" ]; then
         return 0
@@ -883,7 +963,7 @@ import_dashboards() {
         fi
         
         local url="https://dev.azure.com/$org/$project/_apis/dashboard/dashboards?api-version=7.1-preview.3"
-        local response=$(call_ado_api "POST" "$url" "$(cat "$dashboard_file")" "$pat" 2>/dev/null)
+        local response=$(call_ado_api "POST" "$url" "$(cat "$dashboard_file")" "$token" 2>/dev/null)
         
         if echo "$response" | grep -q '"id"' 2>/dev/null; then
             print_success "Created dashboard: $dashboard_name"
@@ -903,7 +983,7 @@ import_wiki() {
     local org=$1
     local project=$2
     local wiki_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$wiki_dir" ]; then
         return 0
@@ -920,7 +1000,7 @@ import_wiki() {
     
     # Get project ID
     local project_url="https://dev.azure.com/$org/_apis/projects/$project?api-version=7.1"
-    local project_info=$(call_ado_api "GET" "$project_url" "" "$pat" 2>/dev/null)
+    local project_info=$(call_ado_api "GET" "$project_url" "" "$token" 2>/dev/null)
     local project_id=$(echo "$project_info" | jq -r '.id // empty' 2>/dev/null)
     
     if [ -z "$project_id" ]; then
@@ -943,7 +1023,7 @@ EOF
 )
         
         local wiki_url="https://dev.azure.com/$org/$project/_apis/wiki/wikis?api-version=7.1"
-        local wiki_response=$(call_ado_api "POST" "$wiki_url" "$wiki_payload" "$pat" 2>/dev/null)
+        local wiki_response=$(call_ado_api "POST" "$wiki_url" "$wiki_payload" "$token" 2>/dev/null)
         
         if echo "$wiki_response" | grep -q '"id"' 2>/dev/null; then
             local wiki_id=$(echo "$wiki_response" | jq -r '.id // empty' 2>/dev/null)
@@ -975,7 +1055,7 @@ EOF
                     
                     local page_path=$(echo "$page_name" | sed 's/ /%20/g')
                     local page_url="https://dev.azure.com/$org/$project/_apis/wiki/wikis/$wiki_id/pages?path=/$page_path&api-version=7.1"
-                    local page_response=$(call_ado_api "PUT" "$page_url" "$page_payload" "$pat" 2>/dev/null)
+                    local page_response=$(call_ado_api "PUT" "$page_url" "$page_payload" "$token" 2>/dev/null)
                     
                     if echo "$page_response" | grep -q '"path"' 2>/dev/null; then
                         echo -n "."
@@ -1001,7 +1081,7 @@ import_service_endpoints() {
     local org=$1
     local project=$2
     local endpoints_dir=$3
-    local pat=$4
+    local token=$4
     
     if [ ! -d "$endpoints_dir" ]; then
         return 0
@@ -1016,11 +1096,11 @@ import_service_endpoints() {
 get_process_template_id() {
     local org=$1
     local process_name=$2
-    local pat=$3
+    local token=$3
     
     # Use the correct API version for process templates
     local url="https://dev.azure.com/$org/_apis/process/processes?api-version=7.1-preview.1"
-    local response=$(call_ado_api "GET" "$url" "" "$pat")
+    local response=$(call_ado_api "GET" "$url" "" "$token")
     
     # Debug: Check if response is empty or has errors
     if [ -z "$response" ]; then
@@ -1121,7 +1201,7 @@ import_template() {
     local org=$1
     local project_name=$2
     local template_name=$3
-    local pat=$4
+    local token=$4
     
     local template_path="$TEMPLATES_DIR/$template_name"
     
@@ -1146,7 +1226,7 @@ import_template() {
     print_info "Process template: $process_type"
     
     # Get process template ID
-    local template_id=$(get_process_template_id "$org" "$process_type" "$pat")
+    local template_id=$(get_process_template_id "$org" "$process_type" "$token")
     
     if [ -z "$template_id" ]; then
         print_error "Failed to get process template ID"
@@ -1156,7 +1236,7 @@ import_template() {
     # Create project
     local description=$(cat "$template_config" | jq -r '.Description // "Demo project created from template"')
     
-    if ! create_project "$org" "$project_name" "$description" "$template_id" "$pat"; then
+    if ! create_project "$org" "$project_name" "$description" "$template_id" "$token"; then
         return 1
     fi
     
@@ -1164,73 +1244,76 @@ import_template() {
     
     # Create iterations
     if [ -f "$template_path/Iterations.json" ]; then
-        create_iterations "$org" "$project_name" "$template_path/Iterations.json" "$pat"
+        create_iterations "$org" "$project_name" "$template_path/Iterations.json" "$token"
         echo ""
     else
         # If no Iterations.json, set dates for default sprints created by Scrum template
-        set_iteration_dates "$org" "$project_name" "$pat"
+        set_iteration_dates "$org" "$project_name" "$token"
         echo ""
     fi
     
     # Create work items (supports both WorkItems/ folder and *fromTemplate.json formats)
-    if [ -d "$template_path/WorkItems" ] || ls "$template_path"/*fromTemplate.json 1> /dev/null 2>&1; then
-        create_work_items "$org" "$project_name" "$template_path" "$pat"
+    if [ -d "$template_path/WorkItems" ]; then
+        create_work_items "$org" "$project_name" "$template_path/WorkItems" "$token"
+        echo ""
+    elif ls "$template_path"/*fromTemplate.json 1> /dev/null 2>&1; then
+        create_work_items "$org" "$project_name" "$template_path" "$token"
         echo ""
     fi
     
     # Import source code
     if [ -d "$template_path/ImportSourceCode" ]; then
-        import_source_code "$org" "$project_name" "$template_path/ImportSourceCode" "$pat"
+        import_source_code "$org" "$project_name" "$template_path/ImportSourceCode" "$token"
         echo ""
     fi
     
     # Create branches and pull requests (only if source code was imported)
     if [ -d "$template_path/PullRequests" ]; then
-        import_branches "$org" "$project_name" "$project_name" "$template_path/PullRequests" "$pat"
+        import_branches "$org" "$project_name" "$project_name" "$template_path/PullRequests" "$token"
         echo ""
-        import_pull_requests "$org" "$project_name" "$project_name" "$template_path/PullRequests" "$pat"
+        import_pull_requests "$org" "$project_name" "$project_name" "$template_path/PullRequests" "$token"
         echo ""
     fi
     
     # Import queries
     if [ -f "$template_path/Query.json" ]; then
-        import_queries "$org" "$project_name" "$template_path/Query.json" "$pat"
+        import_queries "$org" "$project_name" "$template_path/Query.json" "$token"
         echo ""
     fi
     
     # Import build pipelines
     if [ -d "$template_path/BuildDefinitions" ]; then
-        import_build_pipelines "$org" "$project_name" "$template_path/BuildDefinitions" "$pat" "$project_name"
+        import_build_pipelines "$org" "$project_name" "$template_path/BuildDefinitions" "$token" "$project_name"
         echo ""
     fi
     
     # Import release pipelines
     if [ -d "$template_path/ReleaseDefinitions" ]; then
-        import_release_pipelines "$org" "$project_name" "$template_path/ReleaseDefinitions" "$pat"
+        import_release_pipelines "$org" "$project_name" "$template_path/ReleaseDefinitions" "$token"
         echo ""
     fi
     
     # Import test plans
     if [ -d "$template_path/TestPlans" ]; then
-        import_test_plans "$org" "$project_name" "$template_path/TestPlans" "$pat"
+        import_test_plans "$org" "$project_name" "$template_path/TestPlans" "$token"
         echo ""
     fi
     
     # Import dashboards
     if [ -d "$template_path/Dashboard" ]; then
-        import_dashboards "$org" "$project_name" "$template_path/Dashboard" "$pat"
+        import_dashboards "$org" "$project_name" "$template_path/Dashboard" "$token"
         echo ""
     fi
     
     # Import wiki
     if [ -d "$template_path/Wiki" ]; then
-        import_wiki "$org" "$project_name" "$template_path/Wiki" "$pat"
+        import_wiki "$org" "$project_name" "$template_path/Wiki" "$token"
         echo ""
     fi
     
     # Import service endpoints (informational only)
     if [ -d "$template_path/ServiceEndpoints" ]; then
-        import_service_endpoints "$org" "$project_name" "$template_path/ServiceEndpoints" "$pat"
+        import_service_endpoints "$org" "$project_name" "$template_path/ServiceEndpoints" "$token"
         echo ""
     fi
     
@@ -1246,22 +1329,27 @@ show_usage() {
     cat <<EOF
 Usage: $0 [OPTIONS]
 
-Import Azure DevOps templates from local files directly into your organization.
+Import Azure DevOps templates from local files using Azure CLI authentication.
 
 Options:
     -h, --help              Show this help message
     -l, --list              List available templates
     -o, --org ORG           Azure DevOps organization name
-    -p, --pat PAT           Personal Access Token
     -n, --name PROJECT      Project name to create
     -t, --template TEMPLATE Template folder name to import
     -y, --yes               Auto-confirm prompts
 
 Environment Variables:
-    ADO_PAT                 Azure DevOps Personal Access Token
     ADO_ORG                 Azure DevOps Organization name
 
+Prerequisites:
+    - Azure CLI installed (https://aka.ms/azure-cli)
+    - Logged in with 'az login'
+
 Examples:
+    # Login first
+    az login
+
     # List available templates
     $0 --list
 
@@ -1269,15 +1357,14 @@ Examples:
     $0
 
     # Import with command line arguments
-    $0 -o myorg -p \$ADO_PAT -n "MyProject" -t "ContosoShuttle2"
+    $0 -o myorg -n "MyProject" -t "ContosoShuttle2" -y
 
-    # Using environment variables
-    export ADO_PAT="your-pat"
+    # Using environment variable
     export ADO_ORG="your-org"
-    $0 -n "MyProject" -t "ContosoShuttle2"
+    $0 -n "MyProject" -t "ContosoShuttle2" -y
 
-Note: This script imports templates from the local repository, not from the
-      Azure DevOps Demo Generator service.
+Note: This script uses Azure CLI for authentication (more secure than PAT).
+      Run 'az login' before using this script.
 
 EOF
 }
@@ -1302,10 +1389,6 @@ main() {
                 ;;
             -o|--org)
                 ADO_ORG="$2"
-                shift 2
-                ;;
-            -p|--pat)
-                ADO_PAT="$2"
                 shift 2
                 ;;
             -n|--name)
@@ -1335,14 +1418,12 @@ main() {
         exit 1
     fi
     
+    # Check Azure CLI login
+    check_az_login
+    
     # Interactive prompts
     if [ -z "$ADO_ORG" ]; then
         read -p "Enter Azure DevOps Organization name: " ADO_ORG
-    fi
-    
-    if [ -z "$ADO_PAT" ]; then
-        read -sp "Enter Personal Access Token (PAT): " ADO_PAT
-        echo ""
     fi
     
     if [ -z "$PROJECT_NAME" ]; then
@@ -1356,11 +1437,15 @@ main() {
     fi
     
     # Validate inputs
-    if [ -z "$ADO_ORG" ] || [ -z "$ADO_PAT" ] || [ -z "$PROJECT_NAME" ] || [ -z "$TEMPLATE_NAME" ]; then
+    if [ -z "$ADO_ORG" ] || [ -z "$PROJECT_NAME" ] || [ -z "$TEMPLATE_NAME" ]; then
         print_error "Missing required parameters"
         show_usage
         exit 1
     fi
+    
+    # Get Azure DevOps access token
+    print_info "Getting Azure DevOps access token..."
+    local ADO_TOKEN=$(get_az_token)
     
     # Display configuration
     echo ""
@@ -1384,7 +1469,7 @@ main() {
     echo ""
     
     # Import template
-    if import_template "$ADO_ORG" "$PROJECT_NAME" "$TEMPLATE_NAME" "$ADO_PAT"; then
+    if import_template "$ADO_ORG" "$PROJECT_NAME" "$TEMPLATE_NAME" "$ADO_TOKEN"; then
         exit 0
     else
         exit 1
