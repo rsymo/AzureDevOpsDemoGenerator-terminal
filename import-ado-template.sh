@@ -82,17 +82,24 @@ call_ado_api() {
     local temp_response=$(mktemp)
     local temp_status=$(mktemp)
     
+    local curl_status=0
     if [ -z "$data" ]; then
-        curl -s -w "%{http_code}" -o "$temp_response" -X "$method" \
+        curl -sS -w "%{http_code}" -o "$temp_response" -X "$method" \
             -H "$auth_header" \
             -H "Content-Type: $content_type" \
-            "$url" > "$temp_status"
+            "$url" > "$temp_status" || curl_status=$?
     else
-        curl -s -w "%{http_code}" -o "$temp_response" -X "$method" \
+        curl -sS -w "%{http_code}" -o "$temp_response" -X "$method" \
             -H "$auth_header" \
             -H "Content-Type: $content_type" \
             -d "$data" \
-            "$url" > "$temp_status"
+            "$url" > "$temp_status" || curl_status=$?
+    fi
+
+    if [ "$curl_status" -ne 0 ]; then
+        rm -f "$temp_response" "$temp_status"
+        echo "ERROR: Azure DevOps API request failed (curl exit code $curl_status)" >&2
+        return 1
     fi
     
     # Get the HTTP status code and response body
@@ -350,9 +357,13 @@ prepare_project() {
     local use_existing=$7
 
     if [ "$use_existing" = true ]; then
-        validate_existing_project "$org" "$project" "$process_id" "$process_name" "$token"
+        if ! validate_existing_project "$org" "$project" "$process_id" "$process_name" "$token"; then
+            return 1
+        fi
     else
-        create_project "$org" "$project" "$description" "$process_id" "$token"
+        if ! create_project "$org" "$project" "$description" "$process_id" "$token"; then
+            return 1
+        fi
     fi
 }
 

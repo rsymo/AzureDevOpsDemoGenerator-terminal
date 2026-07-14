@@ -49,7 +49,20 @@ assert_failure_contains() {
     fi
 }
 
+assert_failure() {
+    local name=$1
+    shift
+
+    if "$@" > /dev/null 2>&1; then
+        fail "$name"
+    else
+        pass "$name"
+    fi
+}
+
 original_validate_existing_project=$(declare -f validate_existing_project)
+original_call_ado_api=$(declare -f call_ado_api)
+original_create_project=$(declare -f create_project)
 
 create_called=false
 validate_called=false
@@ -78,7 +91,53 @@ else
     fail "existing mode skips project creation"
 fi
 
+create_project() {
+    return 1
+}
+
+assert_failure \
+    "project creation failure is returned" \
+    prepare_project org project description process-id Scrum token false
+
+validate_existing_project() {
+    return 1
+}
+
+assert_failure \
+    "existing project validation failure is returned" \
+    prepare_project org project description process-id Scrum token true
+
+eval "$original_create_project"
 eval "$original_validate_existing_project"
+
+curl() {
+    return 7
+}
+
+assert_curl_failure_cleanup() {
+    local temp_dir
+    local output
+    local status
+
+    temp_dir=$(mktemp -d)
+    output=$(TMPDIR="$temp_dir" call_ado_api GET https://example.invalid "" token 2>&1)
+    status=$?
+
+    if [ "$status" -ne 0 ] \
+        && echo "$output" | grep -Fq "Azure DevOps API request failed (curl exit code 7)" \
+        && [ -z "$(find "$temp_dir" -mindepth 1 -print -quit)" ]; then
+        pass "API transport failure is returned clearly and cleans up temp files"
+    else
+        fail "API transport failure is returned clearly and cleans up temp files"
+        echo "$output"
+    fi
+
+    rmdir "$temp_dir"
+}
+
+assert_curl_failure_cleanup
+
+eval "$original_call_ado_api"
 
 PROJECT_EXISTS=true
 PROJECT_STATE=wellFormed
