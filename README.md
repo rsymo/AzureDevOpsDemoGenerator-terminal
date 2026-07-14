@@ -34,6 +34,20 @@ export ADO_ORG="your-org"
 ./import-ado-template.sh -n "MyProject" -t "Gen-PartsUnlimited" -y
 ```
 
+### Import into an Existing Project
+
+Use `--use-existing` only for a compatible, effectively empty project:
+
+```bash
+./import-ado-template.sh \
+  -n "MyProject" \
+  -t "Gen-PartsUnlimited" \
+  --use-existing \
+  -y
+```
+
+The existing project must use the process required by the template and contain no work items, committed repository content, extra repositories, build pipelines, or wiki. The importer stops before making changes if any preflight check fails.
+
 ## Prerequisites
 
 - **macOS** (tested on modern versions)
