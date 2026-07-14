@@ -63,6 +63,8 @@ call_ado_api() {
     local data=$3
     local token=$4
     local content_type=${5:-"application/json"}
+
+    ADO_LAST_HTTP_CODE=""
     
     # Debug: show the URL being called (only in verbose mode)
     if [ "${DEBUG:-0}" = "1" ]; then
@@ -71,26 +73,39 @@ call_ado_api() {
     
     local auth_header="Authorization: Bearer $token"
     
+    if [ -z "$token" ]; then
+        echo "ERROR: Azure DevOps access token is empty" >&2
+        return 1
+    fi
+
     # Create temp files for response
     local temp_response=$(mktemp)
     local temp_status=$(mktemp)
     
+    local curl_status=0
     if [ -z "$data" ]; then
-        curl -s -w "%{http_code}" -o "$temp_response" -X "$method" \
+        curl -sS -w "%{http_code}" -o "$temp_response" -X "$method" \
             -H "$auth_header" \
             -H "Content-Type: $content_type" \
-            "$url" > "$temp_status"
+            "$url" > "$temp_status" || curl_status=$?
     else
-        curl -s -w "%{http_code}" -o "$temp_response" -X "$method" \
+        curl -sS -w "%{http_code}" -o "$temp_response" -X "$method" \
             -H "$auth_header" \
             -H "Content-Type: $content_type" \
             -d "$data" \
-            "$url" > "$temp_status"
+            "$url" > "$temp_status" || curl_status=$?
+    fi
+
+    if [ "$curl_status" -ne 0 ]; then
+        rm -f "$temp_response" "$temp_status"
+        echo "ERROR: Azure DevOps API request failed (curl exit code $curl_status)" >&2
+        return 1
     fi
     
     # Get the HTTP status code and response body
     local http_code=$(cat "$temp_status")
     local response_body=$(cat "$temp_response")
+    ADO_LAST_HTTP_CODE="$http_code"
     
     # Clean up temp files
     rm -f "$temp_response" "$temp_status"
@@ -112,6 +127,49 @@ call_ado_api() {
     fi
     
     echo "$response_body"
+}
+
+# Function to verify the active Azure CLI identity can access the organization
+validate_ado_access() {
+    local org=$1
+    local token=$2
+    local account
+    local response
+    local response_file
+    local url="https://dev.azure.com/$org/_apis/connectionData?connectOptions=1&lastChangeId=-1&lastChangeId64=-1"
+
+    account=$(az account show --query user.name -o tsv 2>/dev/null) || account="unknown"
+    response_file=$(mktemp)
+
+    if ! call_ado_api "GET" "$url" "" "$token" > "$response_file"; then
+        rm -f "$response_file"
+
+        case "$ADO_LAST_HTTP_CODE" in
+            401|403)
+                print_error "Azure CLI identity '$account' cannot access Azure DevOps organization '$org'."
+                print_info "Sign in with an organization member: az logout && az login --allow-no-subscriptions"
+                print_info "If this is the correct account, ask an organization administrator to add it at https://dev.azure.com/$org"
+                ;;
+            404)
+                print_error "Azure DevOps organization '$org' was not found."
+                print_info "Check ADO_ORG or pass the correct organization with --org."
+                ;;
+            *)
+                print_error "Unable to verify access to Azure DevOps organization '$org' (HTTP ${ADO_LAST_HTTP_CODE:-unknown})."
+                ;;
+        esac
+        return 1
+    fi
+
+    response=$(cat "$response_file")
+    rm -f "$response_file"
+
+    if ! echo "$response" | jq -e '.authenticatedUser.id // .authorizedUser.id' > /dev/null 2>&1; then
+        print_error "Azure DevOps returned an unexpected response while verifying organization access."
+        return 1
+    fi
+
+    print_success "Azure DevOps organization access verified for $account"
 }
 
 # Function to create Azure DevOps project
@@ -178,6 +236,134 @@ EOF
         print_error "Failed to create project"
         echo "$response"
         return 1
+    fi
+}
+
+# Function to validate that an existing project is safe to import into
+validate_existing_project() {
+    local org=$1
+    local project=$2
+    local expected_process_id=$3
+    local expected_process_name=$4
+    local token=$5
+    local project_url="https://dev.azure.com/$org/_apis/projects/$project?includeCapabilities=true&api-version=$ADO_API_VERSION_STABLE"
+    local project_info
+    local blockers=()
+
+    print_info "Validating existing project '$project'..."
+
+    if ! project_info=$(call_ado_api "GET" "$project_url" "" "$token"); then
+        print_error "Could not find or access existing project '$project'."
+        return 1
+    fi
+
+    local project_state=$(echo "$project_info" | jq -r '.state // empty')
+    local source_control=$(echo "$project_info" | jq -r '.capabilities.versioncontrol.sourceControlType // empty')
+    local actual_process_id=$(echo "$project_info" | jq -r '.capabilities.processTemplate.templateTypeId // empty')
+    local actual_process_name=$(echo "$project_info" | jq -r '.capabilities.processTemplate.templateName // "Unknown"')
+
+    if [ "$project_state" != "wellFormed" ]; then
+        blockers+=("project state is '$project_state', expected 'wellFormed'")
+    fi
+
+    if [ "$source_control" != "Git" ]; then
+        blockers+=("source control is '$source_control', expected 'Git'")
+    fi
+
+    if [ -z "$actual_process_id" ]; then
+        blockers+=("project process metadata is unavailable")
+    elif [ "$actual_process_id" != "$expected_process_id" ]; then
+        blockers+=("process is '$actual_process_name', but template requires '$expected_process_name'")
+    fi
+
+    local wiql_payload='{"query":"Select [System.Id] From WorkItems"}'
+    local work_items_url="https://dev.azure.com/$org/$project/_apis/wit/wiql?\$top=1&api-version=$ADO_API_VERSION_STABLE"
+    local work_items_response
+
+    if ! work_items_response=$(call_ado_api "POST" "$work_items_url" "$wiql_payload" "$token"); then
+        print_error "Could not verify whether project '$project' contains work items."
+        return 1
+    fi
+
+    if [ "$(echo "$work_items_response" | jq -r '.workItems | length')" -gt 0 ]; then
+        blockers+=("project contains work items")
+    fi
+
+    local repositories_url="https://dev.azure.com/$org/$project/_apis/git/repositories?api-version=$ADO_API_VERSION_STABLE"
+    local repositories_response
+
+    if ! repositories_response=$(call_ado_api "GET" "$repositories_url" "" "$token"); then
+        print_error "Could not verify repositories in project '$project'."
+        return 1
+    fi
+
+    local repository_count=$(echo "$repositories_response" | jq -r '.count // 0')
+    local repository_name=$(echo "$repositories_response" | jq -r '.value[0].name // empty')
+    local repository_size=$(echo "$repositories_response" | jq -r '.value[0].size // 0')
+    local default_branch=$(echo "$repositories_response" | jq -r '.value[0].defaultBranch // empty')
+
+    if [ "$repository_count" -ne 1 ]; then
+        blockers+=("project has $repository_count repositories, expected exactly one empty default repository")
+    elif [ "$repository_name" != "$project" ]; then
+        blockers+=("default repository is '$repository_name', expected '$project'")
+    elif [ "$repository_size" -ne 0 ] || [ -n "$default_branch" ]; then
+        blockers+=("repository '$repository_name' contains committed content")
+    fi
+
+    local builds_url="https://dev.azure.com/$org/$project/_apis/build/definitions?\$top=1&api-version=$ADO_API_VERSION_STABLE"
+    local builds_response
+
+    if ! builds_response=$(call_ado_api "GET" "$builds_url" "" "$token"); then
+        print_error "Could not verify build definitions in project '$project'."
+        return 1
+    fi
+
+    if [ "$(echo "$builds_response" | jq -r '.count // 0')" -gt 0 ]; then
+        blockers+=("project contains build pipelines")
+    fi
+
+    local wikis_url="https://dev.azure.com/$org/$project/_apis/wiki/wikis?api-version=$ADO_API_VERSION_STABLE"
+    local wikis_response
+
+    if ! wikis_response=$(call_ado_api "GET" "$wikis_url" "" "$token"); then
+        print_error "Could not verify wikis in project '$project'."
+        return 1
+    fi
+
+    if [ "$(echo "$wikis_response" | jq -r '.count // 0')" -gt 0 ]; then
+        blockers+=("project contains a wiki")
+    fi
+
+    if [ ${#blockers[@]} -gt 0 ]; then
+        print_error "Existing project '$project' is not safe to reuse:"
+        local blocker
+        for blocker in "${blockers[@]}"; do
+            echo "  - $blocker" >&2
+        done
+        return 1
+    fi
+
+    print_success "Existing project is compatible and effectively empty"
+}
+
+# Function to create a new project or validate an existing one
+prepare_project() {
+    local org=$1
+    local project=$2
+    local description=$3
+    local process_id=$4
+    local process_name=$5
+    local token=$6
+    local use_existing=$7
+
+    if [ "$use_existing" = true ]; then
+        if ! validate_existing_project "$org" "$project" "$process_id" "$process_name" "$token"; then
+            return 1
+        fi
+    else
+        if ! create_project "$org" "$project" "$description" "$process_id" "$token"; then
+            return 1
+        fi
     fi
 }
 
@@ -1097,6 +1283,7 @@ get_process_template_id() {
     local org=$1
     local process_name=$2
     local token=$3
+    local require_exact_match=${4:-false}
     
     # Use the correct API version for process templates
     local url="https://dev.azure.com/$org/_apis/process/processes?api-version=7.1-preview.1"
@@ -1122,6 +1309,11 @@ get_process_template_id() {
     
     # Try to find the requested process template
     local template_id=$(echo "$response" | jq -r ".value[]? | select(.name==\"$process_name\") | .id" 2>/dev/null | head -1)
+
+    if { [ -z "$template_id" ] || [ "$template_id" = "null" ]; } && [ "$require_exact_match" = true ]; then
+        echo "ERROR: Required process template '$process_name' is not available in organization '$org'" >&2
+        return 1
+    fi
     
     if [ -z "$template_id" ] || [ "$template_id" = "null" ]; then
         # Fallback to Scrum
@@ -1202,6 +1394,7 @@ import_template() {
     local project_name=$2
     local template_name=$3
     local token=$4
+    local use_existing=${5:-false}
     
     local template_path="$TEMPLATES_DIR/$template_name"
     
@@ -1226,17 +1419,17 @@ import_template() {
     print_info "Process template: $process_type"
     
     # Get process template ID
-    local template_id=$(get_process_template_id "$org" "$process_type" "$token")
+    local template_id=$(get_process_template_id "$org" "$process_type" "$token" "$use_existing")
     
     if [ -z "$template_id" ]; then
         print_error "Failed to get process template ID"
         return 1
     fi
     
-    # Create project
+    # Create a new project or validate an existing project
     local description=$(cat "$template_config" | jq -r '.Description // "Demo project created from template"')
     
-    if ! create_project "$org" "$project_name" "$description" "$template_id" "$token"; then
+    if ! prepare_project "$org" "$project_name" "$description" "$template_id" "$process_type" "$token" "$use_existing"; then
         return 1
     fi
     
@@ -1335,8 +1528,9 @@ Options:
     -h, --help              Show this help message
     -l, --list              List available templates
     -o, --org ORG           Azure DevOps organization name
-    -n, --name PROJECT      Project name to create
+    -n, --name PROJECT      Project name to create or reuse
     -t, --template TEMPLATE Template folder name to import
+    -e, --use-existing      Reuse a compatible, effectively empty project
     -y, --yes               Auto-confirm prompts
 
 Environment Variables:
@@ -1359,6 +1553,9 @@ Examples:
     # Import with command line arguments
     $0 -o myorg -n "MyProject" -t "ContosoShuttle2" -y
 
+    # Import into an existing compatible, empty project
+    $0 -o myorg -n "MyProject" -t "ContosoShuttle2" --use-existing -y
+
     # Using environment variable
     export ADO_ORG="your-org"
     $0 -n "MyProject" -t "ContosoShuttle2" -y
@@ -1376,6 +1573,7 @@ main() {
     
     # Parse arguments
     local AUTO_CONFIRM=false
+    local USE_EXISTING=false
     
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -1398,6 +1596,10 @@ main() {
             -t|--template)
                 TEMPLATE_NAME="$2"
                 shift 2
+                ;;
+            -e|--use-existing)
+                USE_EXISTING=true
+                shift
                 ;;
             -y|--yes)
                 AUTO_CONFIRM=true
@@ -1446,6 +1648,11 @@ main() {
     # Get Azure DevOps access token
     print_info "Getting Azure DevOps access token..."
     local ADO_TOKEN=$(get_az_token)
+
+    # Fail before import if the active Azure identity is not an organization member
+    if ! validate_ado_access "$ADO_ORG" "$ADO_TOKEN"; then
+        exit 1
+    fi
     
     # Display configuration
     echo ""
@@ -1453,6 +1660,11 @@ main() {
     echo "Organization: $ADO_ORG"
     echo "Project Name: $PROJECT_NAME"
     echo "Template:     $TEMPLATE_NAME"
+    if [ "$USE_EXISTING" = true ]; then
+        echo "Project Mode: Reuse existing (must be compatible and effectively empty)"
+    else
+        echo "Project Mode: Create new"
+    fi
     echo "Templates Dir: $TEMPLATES_DIR"
     echo ""
     
@@ -1469,12 +1681,14 @@ main() {
     echo ""
     
     # Import template
-    if import_template "$ADO_ORG" "$PROJECT_NAME" "$TEMPLATE_NAME" "$ADO_TOKEN"; then
+    if import_template "$ADO_ORG" "$PROJECT_NAME" "$TEMPLATE_NAME" "$ADO_TOKEN" "$USE_EXISTING"; then
         exit 0
     else
         exit 1
     fi
 }
 
-# Run main
-main "$@"
+# Run main when executed directly, but allow tests to source the functions
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi

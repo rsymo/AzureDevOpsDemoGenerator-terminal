@@ -24,6 +24,9 @@ export ADO_ORG="your-org-name"
 
 # Import with auto-confirm
 ./import-ado-template.sh -n "ProjectName" -t "TemplateName" -y
+
+# Import into a compatible, effectively empty project
+./import-ado-template.sh -n "ProjectName" -t "TemplateName" --use-existing -y
 ```
 
 ## Popular Templates
@@ -85,8 +88,18 @@ export ADO_ORG="correct-org-name"
 # Token expired?
 az login  # Re-authenticate
 
+# HTTP 401 / TF400813?
+az account show --query user.name -o tsv
+az logout
+az login --allow-no-subscriptions
+# The signed-in identity must also be a member of the Azure DevOps organization.
+
 # Template not found?
 ./import-ado-template.sh --list  # Check exact name
+
+# Existing project rejected?
+# Confirm its process matches the template and that it has no work items,
+# committed repository content, extra repositories, builds, or wiki.
 ```
 
 ## Authentication
@@ -117,6 +130,9 @@ export ADO_ORG="myorg"
 
 # With specific org
 ./import-ado-template.sh -o "myorg" -n "TestProject" -t "DL-Docker" -y
+
+# Reuse an existing compatible, effectively empty project
+./import-ado-template.sh -o "myorg" -n "TestProject" -t "DL-Docker" --use-existing -y
 
 # Interactive mode (asks for inputs)
 ./import-ado-template.sh
