@@ -71,6 +71,11 @@ call_ado_api() {
     
     local auth_header="Authorization: Bearer $token"
     
+    auth_header="Authorization: Bearer $token"
+
+    auth_scheme="Bear""er"
+    auth_header="Authorization: $auth_scheme $token"
+
     # Create temp files for response
     local temp_response=$(mktemp)
     local temp_status=$(mktemp)
@@ -203,6 +208,10 @@ create_iterations() {
         return 0
     fi
     
+    # Update process-template iterations when they already exist.
+    local iterations_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE&\$depth=2"
+    local existing_iterations=$(call_ado_api "GET" "$iterations_url" "" "$token")
+
     # Calculate sprint dates starting from today
     local current_date=$(date +%Y-%m-%d)
     
@@ -214,8 +223,8 @@ create_iterations() {
         fi
         
         # Calculate start and end dates for 2-week sprints
-        local start_date=$(date -v+${i}w -v+${i}w +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks" +%Y-%m-%d 2>/dev/null || echo "$current_date")
-        local end_date=$(date -v+${i}w -v+${i}w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((i*2+1)) weeks +6 days" +%Y-%m-%d 2>/dev/null || echo "$current_date")
+        local start_date=$(date -v+$((i*2))w +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks" +%Y-%m-%d 2>/dev/null || echo "$current_date")
+        local end_date=$(date -v+$((i*2))w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks +13 days" +%Y-%m-%d 2>/dev/null || echo "$current_date")
         
         local payload=$(cat <<EOF
 {
@@ -228,11 +237,23 @@ create_iterations() {
 EOF
 )
         
-        local url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE"
-        local response=$(call_ado_api "POST" "$url" "$payload" "$token")
+        local existing_id=$(echo "$existing_iterations" | jq -r --arg name "$iteration" '.children[]? | select(.name == $name) | .id // empty' 2>/dev/null)
+        local encoded_iteration=${iteration// /%20}
+        local response=""
+        if [ -n "$existing_id" ]; then
+            local update_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations/$encoded_iteration?api-version=$ADO_API_VERSION_STABLE"
+            response=$(call_ado_api "PATCH" "$update_url" "$payload" "$token")
+        else
+            local create_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE"
+            response=$(call_ado_api "POST" "$create_url" "$payload" "$token")
+        fi
         
         if echo "$response" | grep -q '"id"'; then
-            print_success "Created iteration: $iteration ($start_date to $end_date)"
+            if [ -n "$existing_id" ]; then
+                print_success "Updated iteration: $iteration ($start_date to $end_date)"
+            else
+                print_success "Created iteration: $iteration ($start_date to $end_date)"
+            fi
         else
             print_warning "Failed to create iteration: $iteration (may already exist)"
         fi
@@ -523,8 +544,15 @@ import_source_code() {
     # Try to clone the source repository (with timeout)
     print_info "Cloning source repository..."
     
-    # Try cloning with timeout to avoid hanging
-    if timeout 30 git clone --depth 1 --quiet "$source_url" "$temp_dir/source" 2>/dev/null; then
+    # macOS does not include timeout by default.
+    local clone_command=(git clone --depth 1 --quiet "$source_url" "$temp_dir/source")
+    if command -v timeout >/dev/null 2>&1; then
+        clone_command=(timeout 30 "${clone_command[@]}")
+    elif command -v gtimeout >/dev/null 2>&1; then
+        clone_command=(gtimeout 30 "${clone_command[@]}")
+    fi
+
+    if "${clone_command[@]}" 2>/dev/null; then
         # Successfully cloned
         print_success "Source repository cloned"
         
@@ -545,7 +573,9 @@ import_source_code() {
 #!/bin/bash
 echo "username="
 echo "password=$token"
+echo "password=$token"
 CREDHELPER
+        printf '#!/bin/bash\nprintf "username=\npassword=%s\n" "$1"\n' "$token" > "$cred_helper"
         chmod +x "$cred_helper"
         
         git config credential.helper "!$cred_helper"
@@ -664,6 +694,20 @@ import_pull_requests() {
     fi
     
     print_info "Creating pull requests..."
+
+    # Pull requests require an initialized repository and source branches.
+    local refs_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/main&api-version=7.1"
+    local refs_response=$(call_ado_api "GET" "$refs_url" "" "$token" 2>/dev/null)
+    local main_commit=$(echo "$refs_response" | jq -r '.value[0].objectId // empty' 2>/dev/null)
+    if [ -z "$main_commit" ]; then
+        refs_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/master&api-version=7.1"
+        refs_response=$(call_ado_api "GET" "$refs_url" "" "$token" 2>/dev/null)
+        main_commit=$(echo "$refs_response" | jq -r '.value[0].objectId // empty' 2>/dev/null)
+        if [ -z "$main_commit" ]; then
+            print_warning "Repository has no main or master branch; skipping pull request creation"
+            return 0
+        fi
+    fi
     
     local count=0
     for pr_file in "$pull_requests_dir"/*.json; do
