@@ -63,24 +63,65 @@ For full documentation, see the example script and run `--help`:
 ./import-ado-template.sh --help
 ```
 
-## 📦 Public GitHub Templates (Fully Accessible)
+## 📦 Recommended Templates (verified working)
 
-These templates use public GitHub repositories and work perfectly:
+These templates were verified with an anonymous `git ls-remote` and their source
+repositories still clone without credentials. `--list` shows only templates in
+this verified set.
+
+The richest ones for generating a lot of data:
+
+| Template | Work Items | Source | Builds | Releases | Wiki | Dashboard | Queries | Test Plans | PRs |
+|----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **Gen-PartsUnlimited** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Gen-eShopOnWeb** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ |
+| **Gen-MyShuttle** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Gen-PartsUnlimited-YAML** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **DL-AKS** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-Docker** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-ReleaseGates** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-SonarQube** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+Also verified and available: `DL-Ansible`, `DL-AzureFunctions`,
+`DL-DeploymentGroups`, `DL-Keyvault`, `DL-LaunchDarkly`, `DL-MachineLearning`,
+`DL-Octopus`, `DL-PHP`, `DL-Python`, `DL-Selenium`, `DL-Terraform`,
+`DL-WhiteSource-Bolt`.
+
+Public GitHub-backed templates:
 
 | Template | Repository | Description |
 |----------|-----------|-------------|
 | **FA-IAC-migration** | [GitHub](https://github.com/amillerb/fta-live-devops-iac-migration-src) | Infrastructure as Code migration patterns |
-| **Gen-Tailwind Traders** | [Backend](https://github.com/Microsoft/TailwindTraders-Backend) / [Website](https://github.com/Microsoft/TailwindTraders-Website) | E-commerce demo application |
-| **MSL-Review-azure-infrastructure-changes** | [GitHub](https://github.com/MicrosoftDocs/mslearn-review-azure-infrastructure-changes-using-bicep-pull-requests) | Bicep PR review workflows |
+| **Gen-Tailwind Traders** | [Backend](https://github.com/Microsoft/TailwindTraders-Backend) / [Website](https://github.com/Microsoft/TailwindTraders-Website) | E-commerce demo application (the third, ADO-hosted repo is gone) |
 | **MSL-Test-bicep** | [GitHub](https://github.com/MicrosoftDocs/mslearn-test-bicep-code-using-azure-pipelines) | Testing Bicep code with pipelines |
 | **MSL-Toy-reusable** | [GitHub](https://github.com/MicrosoftDocs/mslearn-publish-reusable-bicep-code-using-azure-pipelines) | Publishing reusable Bicep modules |
 | **MSL-manage-end-end-deployment-scenarios** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-end-end-deployment-scenarios-using-bicep-azure-pipelines) | End-to-end Bicep deployments |
 | **Manage-multiple-environments-azure-pipelines** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-multiple-environments-using-bicep-azure-pipelines) | Multi-environment Bicep workflows |
 
+## 🗄️ Archived Templates
+
+45 of the original 71 templates point at source repositories that are no longer
+publicly reachable. The hosting organization was deleted, made private, or now
+requires a login. Importing one of these produces a project with work items but
+no source code, branches, pull requests, or pipelines.
+
+These are listed in [`templates-archive.txt`](templates-archive.txt) and are
+hidden from `--list`. They remain importable if you name one explicitly with
+`-t`, and the script prints a warning first.
+
+```bash
+# Show archived templates too
+./import-ado-template.sh --list-all
+```
+
 ## 📋 Complete Template Feature Matrix
 
 <details>
 <summary><b>Click to expand - All 71 Templates with Feature Comparison</b></summary>
+
+> Note: the "Repo Access" column below is inherited from the original project
+> and reflects where a repo is hosted, not whether it is still reachable. See
+> `templates-archive.txt` for the current verified status.
 
 | Template | Work Items | Source Code | Builds | Releases | Wiki | Dashboard | Queries | Test Plans | PRs | Repo Access |
 |----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
