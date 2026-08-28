@@ -19,6 +19,7 @@ ADO_API_VERSION_STABLE="7.1"
 ADO_API_VERSION_PREVIEW="7.1-preview.4"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TEMPLATES_DIR="$SCRIPT_DIR/AzureDevOpsDemoGenerator-original/src/VstsDemoBuilder/Templates"
+ARCHIVE_FILE="$SCRIPT_DIR/templates-archive.txt"
 
 # Print functions
 print_info() { echo -e "${BLUE}ℹ ${NC}$1"; }
@@ -1185,8 +1186,17 @@ get_process_template_id() {
     echo "$template_id"
 }
 
+# Returns 0 if the given template is in the archive list
+is_archived_template() {
+    local name=$1
+    [ -f "$ARCHIVE_FILE" ] || return 1
+    grep -v '^[[:space:]]*#' "$ARCHIVE_FILE" | grep -qx "[[:space:]]*$name[[:space:]]*"
+}
+
 # Function to list available templates
+# Pass "all" to include archived templates in the output.
 list_templates() {
+    local show_all=${1:-}
     print_header "Available Templates"
     echo ""
     
@@ -1196,16 +1206,28 @@ list_templates() {
     fi
     
     local count=0
+    local archived_count=0
     for template_dir in "$TEMPLATES_DIR"/*; do
         if [ -d "$template_dir" ] && [ -f "$template_dir/ProjectTemplate.json" ]; then
             local template_name=$(basename "$template_dir")
+            local archived=false
+
+            if is_archived_template "$template_name"; then
+                archived=true
+                archived_count=$((archived_count + 1))
+                [ "$show_all" = "all" ] || continue
+            fi
+
             local description=""
-            
             if [ -f "$template_dir/ProjectTemplate.json" ]; then
                 description=$(cat "$template_dir/ProjectTemplate.json" | jq -r '.Description // ""')
             fi
-            
-            echo "  📦 $template_name"
+
+            if [ "$archived" = true ]; then
+                echo "  📦 $template_name  (archived - source repo unavailable)"
+            else
+                echo "  📦 $template_name"
+            fi
             if [ -n "$description" ]; then
                 echo "     $description"
             fi
@@ -1218,6 +1240,9 @@ list_templates() {
         print_warning "No templates found in $TEMPLATES_DIR"
     else
         print_info "Found $count templates"
+        if [ "$show_all" != "all" ] && [ $archived_count -gt 0 ]; then
+            print_info "$archived_count archived template(s) hidden (source repos unavailable). Use --list-all to show them."
+        fi
     fi
 }
 
@@ -1235,6 +1260,11 @@ validate_template() {
     if [ ! -f "$template_path/ProjectTemplate.json" ]; then
         print_error "Invalid template: missing ProjectTemplate.json"
         return 1
+    fi
+    
+    if is_archived_template "$template_name"; then
+        print_warning "'$template_name' is archived: its source repository is no longer publicly reachable."
+        print_warning "The project will be created with work items, but source code, branches, pull requests and pipelines will be skipped."
     fi
     
     return 0
@@ -1378,6 +1408,7 @@ Import Azure DevOps templates from local files using Azure CLI authentication.
 Options:
     -h, --help              Show this help message
     -l, --list              List available templates
+        --list-all          List all templates, including archived ones
     -o, --org ORG           Azure DevOps organization name
     -n, --name PROJECT      Project name to create
     -t, --template TEMPLATE Template folder name to import
@@ -1401,11 +1432,11 @@ Examples:
     $0
 
     # Import with command line arguments
-    $0 -o myorg -n "MyProject" -t "ContosoShuttle2" -y
+    $0 -o myorg -n "MyProject" -t "Gen-PartsUnlimited" -y
 
     # Using environment variable
     export ADO_ORG="your-org"
-    $0 -n "MyProject" -t "ContosoShuttle2" -y
+    $0 -n "MyProject" -t "Gen-PartsUnlimited" -y
 
 Note: This script uses Azure CLI for authentication (more secure than PAT).
       Run 'az login' before using this script.
@@ -1429,6 +1460,10 @@ main() {
                 ;;
             -l|--list)
                 list_templates
+                exit 0
+                ;;
+            --list-all)
+                list_templates all
                 exit 0
                 ;;
             -o|--org)
