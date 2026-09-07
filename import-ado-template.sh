@@ -709,6 +709,15 @@ EOF
     fi
 }
 
+# Returns success when a refs listing response contains the given ref name.
+ref_exists() {
+    local refs_json=$1
+    local ref_name=$2
+
+    echo "$refs_json" | jq -e --arg ref "$ref_name" \
+        'any(.value[]?; .name == $ref)' > /dev/null 2>&1
+}
+
 # Function to create pull requests
 import_pull_requests() {
     local org=$1
@@ -723,49 +732,66 @@ import_pull_requests() {
     
     print_info "Creating pull requests..."
 
-    # Pull requests require an initialized repository and source branches.
-    local refs_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/main&api-version=7.1"
-    local refs_response=$(call_ado_api "GET" "$refs_url" "" "$token" 2>/dev/null)
-    local main_commit=$(echo "$refs_response" | jq -r '.value[0].objectId // empty' 2>/dev/null)
-    if [ -z "$main_commit" ]; then
-        refs_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/master&api-version=7.1"
-        refs_response=$(call_ado_api "GET" "$refs_url" "" "$token" 2>/dev/null)
-        main_commit=$(echo "$refs_response" | jq -r '.value[0].objectId // empty' 2>/dev/null)
-        if [ -z "$main_commit" ]; then
-            print_warning "Repository has no main or master branch; skipping pull request creation"
-            return 0
-        fi
+    # Resolve the branch pull requests should target. Templates hardcode the
+    # branch the demo was authored on, which is not always the branch this
+    # repository ended up with (for example 'master' templates on a 'main' repo).
+    local existing_refs
+    existing_refs=$(call_ado_api "GET" "https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/&api-version=7.1" "" "$token" 2>/dev/null)
+
+    local repo_info
+    repo_info=$(call_ado_api "GET" "https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name?api-version=7.1" "" "$token" 2>/dev/null)
+
+    local default_ref
+    default_ref=$(echo "$repo_info" | jq -r '.defaultBranch // empty' 2>/dev/null)
+    if [ -z "$default_ref" ]; then
+        default_ref="refs/heads/$SOURCE_DEFAULT_BRANCH"
     fi
-    
+
+    if ! ref_exists "$existing_refs" "$default_ref"; then
+        print_warning "Repository has no '$default_ref'; skipping pull request creation"
+        return 0
+    fi
+
     local count=0
+    local skipped=0
     for pr_file in "$pull_requests_dir"/*.json; do
         if [ ! -f "$pr_file" ]; then
             continue
         fi
-        
+
         local title=$(cat "$pr_file" | jq -r '.title // "Pull Request"' 2>/dev/null)
         local description=$(cat "$pr_file" | jq -r '.description // ""' 2>/dev/null)
         local source_ref=$(cat "$pr_file" | jq -r '.sourceRefName // ""' 2>/dev/null)
-        local target_ref=$(cat "$pr_file" | jq -r '.targetRefName // "refs/heads/main"' 2>/dev/null)
-        
-        # Update target ref from master to main if needed
-        if [ "$target_ref" = "refs/heads/master" ]; then
-            target_ref="refs/heads/main"
-        fi
-        
+        local target_ref=$(cat "$pr_file" | jq -r '.targetRefName // empty' 2>/dev/null)
+
         if [ -z "$source_ref" ]; then
             continue
         fi
-        
-        local pr_payload=$(cat <<EOF
-{
-    "sourceRefName": "$source_ref",
-    "targetRefName": "$target_ref",
-    "title": "$title",
-    "description": "$description"
-}
-EOF
-)
+
+        # Azure DevOps rejects the request outright if the source branch is absent.
+        if ! ref_exists "$existing_refs" "$source_ref"; then
+            skipped=$((skipped + 1))
+            echo -n "s"
+            continue
+        fi
+
+        if [ -z "$target_ref" ] || ! ref_exists "$existing_refs" "$target_ref"; then
+            target_ref="$default_ref"
+        fi
+
+        if [ "$source_ref" = "$target_ref" ]; then
+            skipped=$((skipped + 1))
+            echo -n "s"
+            continue
+        fi
+
+        # jq builds the payload so quotes and newlines in titles stay valid JSON.
+        local pr_payload=$(jq -n \
+            --arg source "$source_ref" \
+            --arg target "$target_ref" \
+            --arg title "$title" \
+            --arg description "$description" \
+            '{sourceRefName: $source, targetRefName: $target, title: $title, description: $description}')
         
         local pr_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullrequests?api-version=7.1"
         local response=$(call_ado_api "POST" "$pr_url" "$pr_payload" "$token" 2>/dev/null)
@@ -787,18 +813,8 @@ EOF
                         if [ ! -z "$comment" ]; then
                             local comment_text=$(echo "$comment" | jq -r '.content // empty' 2>/dev/null)
                             if [ ! -z "$comment_text" ]; then
-                                local thread_payload=$(cat <<EOF
-{
-    "comments": [
-        {
-            "content": "$comment_text",
-            "commentType": 1
-        }
-    ],
-    "status": 1
-}
-EOF
-)
+                                local thread_payload=$(jq -n --arg content "$comment_text" \
+                                    '{comments: [{content: $content, commentType: 1}], status: 1}')
                                 local thread_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullRequests/$pr_id/threads?api-version=7.1"
                                 call_ado_api "POST" "$thread_url" "$thread_payload" "$token" > /dev/null 2>&1
                             fi
@@ -814,6 +830,9 @@ EOF
     echo ""
     if [ $count -gt 0 ]; then
         print_success "Created $count pull request(s)"
+    fi
+    if [ $skipped -gt 0 ]; then
+        print_info "Skipped $skipped pull request(s) whose branches are not in this repository"
     fi
 }
 
