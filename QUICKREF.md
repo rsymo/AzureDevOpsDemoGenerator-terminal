@@ -24,6 +24,10 @@ export ADO_ORG="your-org-name"
 
 # Import with auto-confirm
 ./import-ado-template.sh -n "ProjectName" -t "TemplateName" -y
+
+# Import using a custom (or private) source repository
+./import-ado-template.sh -n "MyShuttle" -t "Gen-MyShuttle" \
+    --source-url "https://github.com/rsymo/MyShuttle" -y
 ```
 
 ## Popular Templates

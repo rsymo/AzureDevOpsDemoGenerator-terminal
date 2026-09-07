@@ -201,6 +201,59 @@ hidden from `--list`. They remain importable if you name one explicitly with
 **Work without source code:**
 All templates work fine without source code access. The script creates full project structure (work items, sprints, dashboards, wiki). You can push your own code to the created repositories.
 
+## 🔀 Custom source repositories
+
+Templates normally clone from the source repo recorded in their
+`ImportSourceCode/*.json`. You can point any template at a different repo with
+`--source-url`:
+
+```bash
+./import-ado-template.sh -n "MyShuttle" -t "Gen-MyShuttle" \
+    --source-url "https://github.com/rsymo/MyShuttle" -y
+```
+
+Private `github.com` repos authenticate automatically, in this order:
+
+1. `GITHUB_TOKEN`
+2. `GH_TOKEN`
+3. `gh auth token` (GitHub CLI, if installed and logged in)
+
+The import performs a **full mirror clone**, so complete commit history, every
+branch and every tag are pushed to Azure DevOps. The Azure DevOps default branch
+is set to match the source repo's default branch, and the CI pipeline run is
+queued against that same branch (previously everything was squashed to a single
+commit on `main`).
+
+### Private mirrors used by this fork
+
+`Gen-eShopOnWeb`, `Gen-PartsUnlimited`, `Gen-PartsUnlimited-YAML` and
+`Gen-MyShuttle` are repointed at private mirrors under `rsymo`:
+
+| Template | Source | Default branch |
+|---|---|---|
+| `Gen-eShopOnWeb` | `github.com/rsymo/eShopOnWeb` | `main` |
+| `Gen-PartsUnlimited` | `github.com/rsymo/PartsUnlimited` | `master` |
+| `Gen-PartsUnlimited-YAML` | `github.com/rsymo/PartsUnlimited` | `master` |
+| `Gen-MyShuttle` | `github.com/rsymo/MyShuttle` | `master` |
+
+Each mirror's `azure-pipelines.yml` has been fixed to run on current Azure
+DevOps hosted agents (retired `windows-2019` replaced with `windows-2022`, a
+missing `trigger:` block added to MyShuttle so CI fires and the importer detects
+the pipeline).
+
+Their deploy stages are intentionally left intact and will fail until you create
+the Azure service connections and pipeline variables they expect:
+
+| Repo | Service connection | Variables |
+|---|---|---|
+| eShopOnWeb | `eShopOnWeb` | `rg_name`, `WebsiteName`, `eshop_ServerName`, `BuildConfiguration` |
+| PartsUnlimited | `Visual Studio Enterprise` | `ResourceGroupName`, `WebsiteName`, `ServerName`, `HostingPlan` |
+| MyShuttle | `MyShuttleConnection` | `SERVERNAME`, `SQLUSERNAME`, `SQLPASSWORD`, `WEBAPPNAME` |
+
+eShopOnWeb's build additionally uses GitHub Advanced Security for Azure DevOps
+(CodeQL and dependency scanning tasks); those steps require GHAzDO to be enabled
+on the organisation.
+
 ## Credits
 
 Templates sourced from [Azure DevOps Demo Generator](https://azuredevopsdemogenerator.azurewebsites.net/)
