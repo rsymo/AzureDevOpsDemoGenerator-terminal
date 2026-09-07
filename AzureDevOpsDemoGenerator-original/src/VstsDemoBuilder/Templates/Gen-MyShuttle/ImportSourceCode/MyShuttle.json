@@ -1,11 +1,9 @@
 {
-  "parameters":
-    {
-      "gitSource":
-        {
-          "url": "https://vstsdemodata.visualstudio.com/_git/MyShuttle"
-        },
-      "serviceEndpointId": "$MyShuttle-code$",
-      "deleteServiceEndpointAfterImportIsDone": true
-    }
+  "parameters": {
+    "gitSource": {
+      "url": "https://github.com/rsymo/MyShuttle"
+    },
+    "serviceEndpointId": "$MyShuttle-code$",
+    "deleteServiceEndpointAfterImportIsDone": true
+  }
 }

@@ -21,6 +21,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TEMPLATES_DIR="$SCRIPT_DIR/AzureDevOpsDemoGenerator-original/src/VstsDemoBuilder/Templates"
 ARCHIVE_FILE="$SCRIPT_DIR/templates-archive.txt"
 
+# Optional override for a template's source repository URL (--source-url)
+SOURCE_URL_OVERRIDE=""
+
+# Default branch detected on the imported source repo; used to target pipeline runs.
+SOURCE_DEFAULT_BRANCH="main"
+
 # Print functions
 print_info() { echo -e "${BLUE}ℹ ${NC}$1"; }
 print_success() { echo -e "${GREEN}✓${NC} $1"; }
@@ -508,102 +514,123 @@ create_work_items() {
     print_success "Work items created"
 }
 
+# Build a clone URL with embedded credentials for private sources.
+# Only github.com is augmented; anything else is returned unchanged.
+authenticated_source_url() {
+    local url=$1
+    local gh_token=""
+
+    case "$url" in
+        https://github.com/*)
+            gh_token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+            if [ -z "$gh_token" ] && command -v gh >/dev/null 2>&1; then
+                gh_token=$(gh auth token 2>/dev/null || true)
+            fi
+            if [ -n "$gh_token" ]; then
+                echo "https://x-access-token:${gh_token}@github.com/${url#https://github.com/}"
+                return 0
+            fi
+            ;;
+    esac
+
+    echo "$url"
+}
+
 # Function to import source code from external repository
 import_source_code() {
     local org=$1
     local project=$2
     local source_config_dir=$3
     local token=$4
-    
-    if [ ! -d "$source_config_dir" ]; then
-        return 0
-    fi
-    
-    print_info "Importing source code..."
-    
-    # Find source code configuration file
-    local config_file=$(find "$source_config_dir" -name "*.json" -type f | head -1)
-    
-    if [ ! -f "$config_file" ]; then
-        print_warning "No source code configuration found"
-        return 0
-    fi
-    
-    # Read source repository URL
-    local source_url=$(cat "$config_file" | jq -r '.parameters.gitSource.url // empty')
-    
-    if [ -z "$source_url" ]; then
-        print_warning "No source repository URL found"
-        return 0
-    fi
-    
-    print_info "Source repository: $source_url"
-    
-    # Create a temporary directory for cloning
-    local temp_dir=$(mktemp -d)
-    
-    # Try to clone the source repository (with timeout)
-    print_info "Cloning source repository..."
-    
-    # macOS does not include timeout by default.
-    local clone_command=(git clone --depth 1 --quiet "$source_url" "$temp_dir/source")
-    if command -v timeout >/dev/null 2>&1; then
-        clone_command=(timeout 30 "${clone_command[@]}")
-    elif command -v gtimeout >/dev/null 2>&1; then
-        clone_command=(gtimeout 30 "${clone_command[@]}")
+
+    local source_url=""
+
+    if [ -n "$SOURCE_URL_OVERRIDE" ]; then
+        source_url="$SOURCE_URL_OVERRIDE"
+        print_info "Using source repository override"
+    else
+        if [ ! -d "$source_config_dir" ]; then
+            return 0
+        fi
+
+        print_info "Importing source code..."
+
+        local config_file=$(find "$source_config_dir" -name "*.json" -type f | head -1)
+
+        if [ ! -f "$config_file" ]; then
+            print_warning "No source code configuration found"
+            return 0
+        fi
+
+        source_url=$(cat "$config_file" | jq -r '.parameters.gitSource.url // empty')
+
+        if [ -z "$source_url" ]; then
+            print_warning "No source repository URL found"
+            return 0
+        fi
     fi
 
-    if "${clone_command[@]}" 2>/dev/null; then
-        # Successfully cloned
-        print_success "Source repository cloned"
-        
-        # Get the default repository name for the project
-        local repo_name="$project"
-        
-        # Remove git history to start fresh
-        cd "$temp_dir/source"
-        rm -rf .git
-        git init --quiet
-        git add .
-        git commit -m "Initial commit from template" --quiet
-        
-        # Configure git credentials for Azure DevOps using token
-        # Use a custom credential helper script
-        local cred_helper="$temp_dir/git-credential-helper.sh"
-        cat > "$cred_helper" << CREDHELPER
-#!/bin/bash
-echo "username="
-echo "password=$token"
-echo "password=$token"
-CREDHELPER
-        printf '#!/bin/bash\nprintf "username=\npassword=%s\n" "$1"\n' "$token" > "$cred_helper"
-        chmod +x "$cred_helper"
-        
-        git config credential.helper "!$cred_helper"
-        git remote add origin "https://dev.azure.com/$org/$project/_git/$repo_name"
-        
-        # Push to Azure DevOps
-        print_info "Pushing code to Azure DevOps repository..."
-        if git push -u origin --all --force --quiet 2>&1; then
-            print_success "Source code imported successfully"
-        else
-            # Try one more time with main/master specifically
-            if git push -u origin main --quiet 2>/dev/null || git push -u origin master --quiet 2>/dev/null; then
-                print_success "Source code imported successfully"
-            else
-                print_warning "Could not push to Azure DevOps repository - you may need to initialize it manually"
-            fi
-        fi
-        
-        # Clean up
-        cd - > /dev/null
-    else
+    print_info "Source repository: $source_url"
+
+    local clone_url
+    clone_url=$(authenticated_source_url "$source_url")
+
+    local temp_dir=$(mktemp -d)
+
+    # Full mirror clone preserves history, every branch and every tag.
+    print_info "Cloning source repository (full history)..."
+
+    local clone_command=(git clone --mirror --quiet "$clone_url" "$temp_dir/source.git")
+    if command -v timeout >/dev/null 2>&1; then
+        clone_command=(timeout 300 "${clone_command[@]}")
+    elif command -v gtimeout >/dev/null 2>&1; then
+        clone_command=(gtimeout 300 "${clone_command[@]}")
+    fi
+
+    if ! GIT_TERMINAL_PROMPT=0 "${clone_command[@]}" 2>/dev/null; then
         print_warning "Source repository not accessible (may be private or offline)"
         print_info "You can manually clone code from: $source_url"
         print_info "Or push your own code to: https://dev.azure.com/$org/$project/_git/$project"
+        rm -rf "$temp_dir"
+        return 0
     fi
-    
-    # Clean up
+
+    print_success "Source repository cloned"
+
+    # Bare repos need this flag when safe.bareRepository is set to 'explicit'.
+    local git_bare=(git -c safe.bareRepository=all --git-dir="$temp_dir/source.git")
+
+    local branch_count tag_count commit_count
+    branch_count=$("${git_bare[@]}" for-each-ref --format='%(refname)' refs/heads | wc -l | tr -d ' ')
+    tag_count=$("${git_bare[@]}" for-each-ref --format='%(refname)' refs/tags | wc -l | tr -d ' ')
+    commit_count=$("${git_bare[@]}" rev-list --all --count 2>/dev/null || echo "?")
+    print_info "$commit_count commit(s), $branch_count branch(es), $tag_count tag(s)"
+
+    # Remember the source default branch so the pipeline run targets the right ref.
+    SOURCE_DEFAULT_BRANCH=$("${git_bare[@]}" symbolic-ref --short HEAD 2>/dev/null || echo "")
+    if [ -z "$SOURCE_DEFAULT_BRANCH" ]; then
+        SOURCE_DEFAULT_BRANCH="main"
+    fi
+
+    local repo_name="$project"
+
+    # Azure DevOps accepts the access token as the password over HTTPS basic auth.
+    local ado_url="https://ado:${token}@dev.azure.com/$org/$project/_git/$repo_name"
+
+    print_info "Pushing code to Azure DevOps repository..."
+    if "${git_bare[@]}" push --quiet --force "$ado_url" 'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*' 2>/dev/null; then
+        print_success "Source code imported ($branch_count branch(es), $tag_count tag(s), history preserved)"
+
+        # Align the Azure DevOps default branch with the source default branch.
+        local repo_api="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name?api-version=$ADO_API_VERSION_STABLE"
+        local default_payload
+        default_payload=$(jq -n --arg ref "refs/heads/$SOURCE_DEFAULT_BRANCH" '{defaultBranch: $ref}')
+        call_ado_api "PATCH" "$repo_api" "$default_payload" "$token" > /dev/null 2>&1
+        print_info "Default branch set to '$SOURCE_DEFAULT_BRANCH'"
+    else
+        print_warning "Could not push to Azure DevOps repository - you may need to initialize it manually"
+    fi
+
     rm -rf "$temp_dir"
 }
 
@@ -844,7 +871,9 @@ EOF
                 print_success "YAML pipeline created automatically! (ID: $pipeline_id)"
                 
                 # Queue a build run to initialize the pipeline
-                local run_payload='{"resources":{"repositories":{"self":{"refName":"refs/heads/main"}}}}'
+                local run_payload
+                run_payload=$(jq -n --arg ref "refs/heads/$SOURCE_DEFAULT_BRANCH" \
+                    '{resources:{repositories:{self:{refName:$ref}}}}')
                 local run_url="https://dev.azure.com/$org/$project/_apis/pipelines/$pipeline_id/runs?api-version=7.1"
                 call_ado_api "POST" "$run_url" "$run_payload" "$token" > /dev/null 2>&1
             else
@@ -1336,7 +1365,7 @@ import_template() {
     fi
     
     # Import source code
-    if [ -d "$template_path/ImportSourceCode" ]; then
+    if [ -d "$template_path/ImportSourceCode" ] || [ -n "$SOURCE_URL_OVERRIDE" ]; then
         import_source_code "$org" "$project_name" "$template_path/ImportSourceCode" "$token"
         echo ""
     fi
@@ -1412,10 +1441,14 @@ Options:
     -o, --org ORG           Azure DevOps organization name
     -n, --name PROJECT      Project name to create
     -t, --template TEMPLATE Template folder name to import
+        --source-url URL    Override the template's source repository URL
+                            (private github.com repos authenticate via gh CLI,
+                             GITHUB_TOKEN or GH_TOKEN)
     -y, --yes               Auto-confirm prompts
 
 Environment Variables:
     ADO_ORG                 Azure DevOps Organization name
+    GITHUB_TOKEN / GH_TOKEN Token used to clone private GitHub source repos
 
 Prerequisites:
     - Azure CLI installed (https://aka.ms/azure-cli)
@@ -1476,6 +1509,10 @@ main() {
                 ;;
             -t|--template)
                 TEMPLATE_NAME="$2"
+                shift 2
+                ;;
+            --source-url)
+                SOURCE_URL_OVERRIDE="$2"
                 shift 2
                 ;;
             -y|--yes)
