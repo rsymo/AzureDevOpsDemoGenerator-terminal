@@ -34,6 +34,20 @@ export ADO_ORG="your-org"
 ./import-ado-template.sh -n "MyProject" -t "Gen-PartsUnlimited" -y
 ```
 
+### Import into an Existing Project
+
+Use `--use-existing` only for a compatible, effectively empty project:
+
+```bash
+./import-ado-template.sh \
+  -n "MyProject" \
+  -t "Gen-PartsUnlimited" \
+  --use-existing \
+  -y
+```
+
+The existing project must use the process required by the template and contain no work items, committed repository content, extra repositories, build pipelines, or wiki. The importer stops before making changes if any preflight check fails.
+
 ## Prerequisites
 
 - **macOS** (tested on modern versions)
@@ -63,24 +77,65 @@ For full documentation, see the example script and run `--help`:
 ./import-ado-template.sh --help
 ```
 
-## 📦 Public GitHub Templates (Fully Accessible)
+## 📦 Recommended Templates (verified working)
 
-These templates use public GitHub repositories and work perfectly:
+These templates were verified with an anonymous `git ls-remote` and their source
+repositories still clone without credentials. `--list` shows only templates in
+this verified set.
+
+The richest ones for generating a lot of data:
+
+| Template | Work Items | Source | Builds | Releases | Wiki | Dashboard | Queries | Test Plans | PRs |
+|----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **Gen-PartsUnlimited** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Gen-eShopOnWeb** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ |
+| **Gen-MyShuttle** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Gen-PartsUnlimited-YAML** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **DL-AKS** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-Docker** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-ReleaseGates** | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **DL-SonarQube** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+Also verified and available: `DL-Ansible`, `DL-AzureFunctions`,
+`DL-DeploymentGroups`, `DL-Keyvault`, `DL-LaunchDarkly`, `DL-MachineLearning`,
+`DL-Octopus`, `DL-PHP`, `DL-Python`, `DL-Selenium`, `DL-Terraform`,
+`DL-WhiteSource-Bolt`.
+
+Public GitHub-backed templates:
 
 | Template | Repository | Description |
 |----------|-----------|-------------|
 | **FA-IAC-migration** | [GitHub](https://github.com/amillerb/fta-live-devops-iac-migration-src) | Infrastructure as Code migration patterns |
-| **Gen-Tailwind Traders** | [Backend](https://github.com/Microsoft/TailwindTraders-Backend) / [Website](https://github.com/Microsoft/TailwindTraders-Website) | E-commerce demo application |
-| **MSL-Review-azure-infrastructure-changes** | [GitHub](https://github.com/MicrosoftDocs/mslearn-review-azure-infrastructure-changes-using-bicep-pull-requests) | Bicep PR review workflows |
+| **Gen-Tailwind Traders** | [Backend](https://github.com/Microsoft/TailwindTraders-Backend) / [Website](https://github.com/Microsoft/TailwindTraders-Website) | E-commerce demo application (the third, ADO-hosted repo is gone) |
 | **MSL-Test-bicep** | [GitHub](https://github.com/MicrosoftDocs/mslearn-test-bicep-code-using-azure-pipelines) | Testing Bicep code with pipelines |
 | **MSL-Toy-reusable** | [GitHub](https://github.com/MicrosoftDocs/mslearn-publish-reusable-bicep-code-using-azure-pipelines) | Publishing reusable Bicep modules |
 | **MSL-manage-end-end-deployment-scenarios** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-end-end-deployment-scenarios-using-bicep-azure-pipelines) | End-to-end Bicep deployments |
 | **Manage-multiple-environments-azure-pipelines** | [GitHub](https://github.com/MicrosoftDocs/mslearn-manage-multiple-environments-using-bicep-azure-pipelines) | Multi-environment Bicep workflows |
 
+## 🗄️ Archived Templates
+
+45 of the original 71 templates point at source repositories that are no longer
+publicly reachable. The hosting organization was deleted, made private, or now
+requires a login. Importing one of these produces a project with work items but
+no source code, branches, pull requests, or pipelines.
+
+These are listed in [`templates-archive.txt`](templates-archive.txt) and are
+hidden from `--list`. They remain importable if you name one explicitly with
+`-t`, and the script prints a warning first.
+
+```bash
+# Show archived templates too
+./import-ado-template.sh --list-all
+```
+
 ## 📋 Complete Template Feature Matrix
 
 <details>
 <summary><b>Click to expand - All 71 Templates with Feature Comparison</b></summary>
+
+> Note: the "Repo Access" column below is inherited from the original project
+> and reflects where a repo is hosted, not whether it is still reachable. See
+> `templates-archive.txt` for the current verified status.
 
 | Template | Work Items | Source Code | Builds | Releases | Wiki | Dashboard | Queries | Test Plans | PRs | Repo Access |
 |----------|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -159,6 +214,59 @@ These templates use public GitHub repositories and work perfectly:
 
 **Work without source code:**
 All templates work fine without source code access. The script creates full project structure (work items, sprints, dashboards, wiki). You can push your own code to the created repositories.
+
+## 🔀 Custom source repositories
+
+Templates normally clone from the source repo recorded in their
+`ImportSourceCode/*.json`. You can point any template at a different repo with
+`--source-url`:
+
+```bash
+./import-ado-template.sh -n "MyShuttle" -t "Gen-MyShuttle" \
+    --source-url "https://github.com/rsymo/MyShuttle" -y
+```
+
+Private `github.com` repos authenticate automatically, in this order:
+
+1. `GITHUB_TOKEN`
+2. `GH_TOKEN`
+3. `gh auth token` (GitHub CLI, if installed and logged in)
+
+The import performs a **full mirror clone**, so complete commit history, every
+branch and every tag are pushed to Azure DevOps. The Azure DevOps default branch
+is set to match the source repo's default branch, and the CI pipeline run is
+queued against that same branch (previously everything was squashed to a single
+commit on `main`).
+
+### Private mirrors used by this fork
+
+`Gen-eShopOnWeb`, `Gen-PartsUnlimited`, `Gen-PartsUnlimited-YAML` and
+`Gen-MyShuttle` are repointed at private mirrors under `rsymo`:
+
+| Template | Source | Default branch |
+|---|---|---|
+| `Gen-eShopOnWeb` | `github.com/rsymo/eShopOnWeb` | `main` |
+| `Gen-PartsUnlimited` | `github.com/rsymo/PartsUnlimited` | `master` |
+| `Gen-PartsUnlimited-YAML` | `github.com/rsymo/PartsUnlimited` | `master` |
+| `Gen-MyShuttle` | `github.com/rsymo/MyShuttle` | `master` |
+
+Each mirror's `azure-pipelines.yml` has been fixed to run on current Azure
+DevOps hosted agents (retired `windows-2019` replaced with `windows-2022`, a
+missing `trigger:` block added to MyShuttle so CI fires and the importer detects
+the pipeline).
+
+Their deploy stages are intentionally left intact and will fail until you create
+the Azure service connections and pipeline variables they expect:
+
+| Repo | Service connection | Variables |
+|---|---|---|
+| eShopOnWeb | `eShopOnWeb` | `rg_name`, `WebsiteName`, `eshop_ServerName`, `BuildConfiguration` |
+| PartsUnlimited | `Visual Studio Enterprise` | `ResourceGroupName`, `WebsiteName`, `ServerName`, `HostingPlan` |
+| MyShuttle | `MyShuttleConnection` | `SERVERNAME`, `SQLUSERNAME`, `SQLPASSWORD`, `WEBAPPNAME` |
+
+eShopOnWeb's build additionally uses GitHub Advanced Security for Azure DevOps
+(CodeQL and dependency scanning tasks); those steps require GHAzDO to be enabled
+on the organisation.
 
 ## Credits
 
