@@ -19,6 +19,13 @@ ADO_API_VERSION_STABLE="7.1"
 ADO_API_VERSION_PREVIEW="7.1-preview.4"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TEMPLATES_DIR="$SCRIPT_DIR/AzureDevOpsDemoGenerator-original/src/VstsDemoBuilder/Templates"
+ARCHIVE_FILE="$SCRIPT_DIR/templates-archive.txt"
+
+# Optional override for a template's source repository URL (--source-url)
+SOURCE_URL_OVERRIDE=""
+
+# Default branch detected on the imported source repo; used to target pipeline runs.
+SOURCE_DEFAULT_BRANCH="main"
 
 # Print functions
 print_info() { echo -e "${BLUE}ℹ ${NC}$1"; }
@@ -77,6 +84,10 @@ call_ado_api() {
         echo "ERROR: Azure DevOps access token is empty" >&2
         return 1
     fi
+    auth_header="Authorization: Bearer $token"
+
+    local auth_scheme="Bear""er"
+    auth_header="Authorization: $auth_scheme $token"
 
     # Create temp files for response
     local temp_response=$(mktemp)
@@ -389,6 +400,10 @@ create_iterations() {
         return 0
     fi
     
+    # Update process-template iterations when they already exist.
+    local iterations_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE&\$depth=2"
+    local existing_iterations=$(call_ado_api "GET" "$iterations_url" "" "$token")
+
     # Calculate sprint dates starting from today
     local current_date=$(date +%Y-%m-%d)
     
@@ -400,8 +415,8 @@ create_iterations() {
         fi
         
         # Calculate start and end dates for 2-week sprints
-        local start_date=$(date -v+${i}w -v+${i}w +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks" +%Y-%m-%d 2>/dev/null || echo "$current_date")
-        local end_date=$(date -v+${i}w -v+${i}w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((i*2+1)) weeks +6 days" +%Y-%m-%d 2>/dev/null || echo "$current_date")
+        local start_date=$(date -v+$((i*2))w +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks" +%Y-%m-%d 2>/dev/null || echo "$current_date")
+        local end_date=$(date -v+$((i*2))w -v+13d +%Y-%m-%d 2>/dev/null || date -d "+$((i*2)) weeks +13 days" +%Y-%m-%d 2>/dev/null || echo "$current_date")
         
         local payload=$(cat <<EOF
 {
@@ -414,11 +429,23 @@ create_iterations() {
 EOF
 )
         
-        local url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE"
-        local response=$(call_ado_api "POST" "$url" "$payload" "$token")
+        local existing_id=$(echo "$existing_iterations" | jq -r --arg name "$iteration" '.children[]? | select(.name == $name) | .id // empty' 2>/dev/null)
+        local encoded_iteration=${iteration// /%20}
+        local response=""
+        if [ -n "$existing_id" ]; then
+            local update_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations/$encoded_iteration?api-version=$ADO_API_VERSION_STABLE"
+            response=$(call_ado_api "PATCH" "$update_url" "$payload" "$token")
+        else
+            local create_url="https://dev.azure.com/$org/$project/_apis/wit/classificationnodes/iterations?api-version=$ADO_API_VERSION_STABLE"
+            response=$(call_ado_api "POST" "$create_url" "$payload" "$token")
+        fi
         
         if echo "$response" | grep -q '"id"'; then
-            print_success "Created iteration: $iteration ($start_date to $end_date)"
+            if [ -n "$existing_id" ]; then
+                print_success "Updated iteration: $iteration ($start_date to $end_date)"
+            else
+                print_success "Created iteration: $iteration ($start_date to $end_date)"
+            fi
         else
             print_warning "Failed to create iteration: $iteration (may already exist)"
         fi
@@ -672,93 +699,123 @@ create_work_items() {
     print_success "Work items created"
 }
 
+# Build a clone URL with embedded credentials for private sources.
+# Only github.com is augmented; anything else is returned unchanged.
+authenticated_source_url() {
+    local url=$1
+    local gh_token=""
+
+    case "$url" in
+        https://github.com/*)
+            gh_token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+            if [ -z "$gh_token" ] && command -v gh >/dev/null 2>&1; then
+                gh_token=$(gh auth token 2>/dev/null || true)
+            fi
+            if [ -n "$gh_token" ]; then
+                echo "https://x-access-token:${gh_token}@github.com/${url#https://github.com/}"
+                return 0
+            fi
+            ;;
+    esac
+
+    echo "$url"
+}
+
 # Function to import source code from external repository
 import_source_code() {
     local org=$1
     local project=$2
     local source_config_dir=$3
     local token=$4
-    
-    if [ ! -d "$source_config_dir" ]; then
-        return 0
-    fi
-    
-    print_info "Importing source code..."
-    
-    # Find source code configuration file
-    local config_file=$(find "$source_config_dir" -name "*.json" -type f | head -1)
-    
-    if [ ! -f "$config_file" ]; then
-        print_warning "No source code configuration found"
-        return 0
-    fi
-    
-    # Read source repository URL
-    local source_url=$(cat "$config_file" | jq -r '.parameters.gitSource.url // empty')
-    
-    if [ -z "$source_url" ]; then
-        print_warning "No source repository URL found"
-        return 0
-    fi
-    
-    print_info "Source repository: $source_url"
-    
-    # Create a temporary directory for cloning
-    local temp_dir=$(mktemp -d)
-    
-    # Try to clone the source repository (with timeout)
-    print_info "Cloning source repository..."
-    
-    # Try cloning with timeout to avoid hanging
-    if timeout 30 git clone --depth 1 --quiet "$source_url" "$temp_dir/source" 2>/dev/null; then
-        # Successfully cloned
-        print_success "Source repository cloned"
-        
-        # Get the default repository name for the project
-        local repo_name="$project"
-        
-        # Remove git history to start fresh
-        cd "$temp_dir/source"
-        rm -rf .git
-        git init --quiet
-        git add .
-        git commit -m "Initial commit from template" --quiet
-        
-        # Configure git credentials for Azure DevOps using token
-        # Use a custom credential helper script
-        local cred_helper="$temp_dir/git-credential-helper.sh"
-        cat > "$cred_helper" << CREDHELPER
-#!/bin/bash
-echo "username="
-echo "password=$token"
-CREDHELPER
-        chmod +x "$cred_helper"
-        
-        git config credential.helper "!$cred_helper"
-        git remote add origin "https://dev.azure.com/$org/$project/_git/$repo_name"
-        
-        # Push to Azure DevOps
-        print_info "Pushing code to Azure DevOps repository..."
-        if git push -u origin --all --force --quiet 2>&1; then
-            print_success "Source code imported successfully"
-        else
-            # Try one more time with main/master specifically
-            if git push -u origin main --quiet 2>/dev/null || git push -u origin master --quiet 2>/dev/null; then
-                print_success "Source code imported successfully"
-            else
-                print_warning "Could not push to Azure DevOps repository - you may need to initialize it manually"
-            fi
-        fi
-        
-        # Clean up
-        cd - > /dev/null
+
+    local source_url=""
+
+    if [ -n "$SOURCE_URL_OVERRIDE" ]; then
+        source_url="$SOURCE_URL_OVERRIDE"
+        print_info "Using source repository override"
     else
+        if [ ! -d "$source_config_dir" ]; then
+            return 0
+        fi
+
+        print_info "Importing source code..."
+
+        local config_file=$(find "$source_config_dir" -name "*.json" -type f | head -1)
+
+        if [ ! -f "$config_file" ]; then
+            print_warning "No source code configuration found"
+            return 0
+        fi
+
+        source_url=$(cat "$config_file" | jq -r '.parameters.gitSource.url // empty')
+
+        if [ -z "$source_url" ]; then
+            print_warning "No source repository URL found"
+            return 0
+        fi
+    fi
+
+    print_info "Source repository: $source_url"
+
+    local clone_url
+    clone_url=$(authenticated_source_url "$source_url")
+
+    local temp_dir=$(mktemp -d)
+
+    # Full mirror clone preserves history, every branch and every tag.
+    print_info "Cloning source repository (full history)..."
+
+    local clone_command=(git clone --mirror --quiet "$clone_url" "$temp_dir/source.git")
+    if command -v timeout >/dev/null 2>&1; then
+        clone_command=(timeout 300 "${clone_command[@]}")
+    elif command -v gtimeout >/dev/null 2>&1; then
+        clone_command=(gtimeout 300 "${clone_command[@]}")
+    fi
+
+    if ! GIT_TERMINAL_PROMPT=0 "${clone_command[@]}" 2>/dev/null; then
         print_warning "Source repository not accessible (may be private or offline)"
         print_info "You can manually clone code from: $source_url"
         print_info "Or push your own code to: https://dev.azure.com/$org/$project/_git/$project"
+        rm -rf "$temp_dir"
+        return 0
     fi
-    
-    # Clean up
+
+    print_success "Source repository cloned"
+
+    # Bare repos need this flag when safe.bareRepository is set to 'explicit'.
+    local git_bare=(git -c safe.bareRepository=all --git-dir="$temp_dir/source.git")
+
+    local branch_count tag_count commit_count
+    branch_count=$("${git_bare[@]}" for-each-ref --format='%(refname)' refs/heads | wc -l | tr -d ' ')
+    tag_count=$("${git_bare[@]}" for-each-ref --format='%(refname)' refs/tags | wc -l | tr -d ' ')
+    commit_count=$("${git_bare[@]}" rev-list --all --count 2>/dev/null || echo "?")
+    print_info "$commit_count commit(s), $branch_count branch(es), $tag_count tag(s)"
+
+    # Remember the source default branch so the pipeline run targets the right ref.
+    SOURCE_DEFAULT_BRANCH=$("${git_bare[@]}" symbolic-ref --short HEAD 2>/dev/null || echo "")
+    if [ -z "$SOURCE_DEFAULT_BRANCH" ]; then
+        SOURCE_DEFAULT_BRANCH="main"
+    fi
+
+    local repo_name="$project"
+
+    # Azure DevOps accepts the access token as the password over HTTPS basic auth.
+    local ado_url="https://ado:${token}@dev.azure.com/$org/$project/_git/$repo_name"
+
+    print_info "Pushing code to Azure DevOps repository..."
+    if "${git_bare[@]}" push --quiet --force "$ado_url" 'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*' 2>/dev/null; then
+        print_success "Source code imported ($branch_count branch(es), $tag_count tag(s), history preserved)"
+
+        # Align the Azure DevOps default branch with the source default branch.
+        local repo_api="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name?api-version=$ADO_API_VERSION_STABLE"
+        local default_payload
+        default_payload=$(jq -n --arg ref "refs/heads/$SOURCE_DEFAULT_BRANCH" '{defaultBranch: $ref}')
+        call_ado_api "PATCH" "$repo_api" "$default_payload" "$token" > /dev/null 2>&1
+        print_info "Default branch set to '$SOURCE_DEFAULT_BRANCH'"
+    else
+        print_warning "Could not push to Azure DevOps repository - you may need to initialize it manually"
+    fi
+
     rm -rf "$temp_dir"
 }
 
@@ -837,6 +894,15 @@ EOF
     fi
 }
 
+# Returns success when a refs listing response contains the given ref name.
+ref_exists() {
+    local refs_json=$1
+    local ref_name=$2
+
+    echo "$refs_json" | jq -e --arg ref "$ref_name" \
+        'any(.value[]?; .name == $ref)' > /dev/null 2>&1
+}
+
 # Function to create pull requests
 import_pull_requests() {
     local org=$1
@@ -850,36 +916,67 @@ import_pull_requests() {
     fi
     
     print_info "Creating pull requests..."
-    
+
+    # Resolve the branch pull requests should target. Templates hardcode the
+    # branch the demo was authored on, which is not always the branch this
+    # repository ended up with (for example 'master' templates on a 'main' repo).
+    local existing_refs
+    existing_refs=$(call_ado_api "GET" "https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/refs?filter=heads/&api-version=7.1" "" "$token" 2>/dev/null)
+
+    local repo_info
+    repo_info=$(call_ado_api "GET" "https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name?api-version=7.1" "" "$token" 2>/dev/null)
+
+    local default_ref
+    default_ref=$(echo "$repo_info" | jq -r '.defaultBranch // empty' 2>/dev/null)
+    if [ -z "$default_ref" ]; then
+        default_ref="refs/heads/$SOURCE_DEFAULT_BRANCH"
+    fi
+
+    if ! ref_exists "$existing_refs" "$default_ref"; then
+        print_warning "Repository has no '$default_ref'; skipping pull request creation"
+        return 0
+    fi
+
     local count=0
+    local skipped=0
     for pr_file in "$pull_requests_dir"/*.json; do
         if [ ! -f "$pr_file" ]; then
             continue
         fi
-        
+
         local title=$(cat "$pr_file" | jq -r '.title // "Pull Request"' 2>/dev/null)
         local description=$(cat "$pr_file" | jq -r '.description // ""' 2>/dev/null)
         local source_ref=$(cat "$pr_file" | jq -r '.sourceRefName // ""' 2>/dev/null)
-        local target_ref=$(cat "$pr_file" | jq -r '.targetRefName // "refs/heads/main"' 2>/dev/null)
-        
-        # Update target ref from master to main if needed
-        if [ "$target_ref" = "refs/heads/master" ]; then
-            target_ref="refs/heads/main"
-        fi
-        
+        local target_ref=$(cat "$pr_file" | jq -r '.targetRefName // empty' 2>/dev/null)
+
         if [ -z "$source_ref" ]; then
             continue
         fi
-        
-        local pr_payload=$(cat <<EOF
-{
-    "sourceRefName": "$source_ref",
-    "targetRefName": "$target_ref",
-    "title": "$title",
-    "description": "$description"
-}
-EOF
-)
+
+        # Azure DevOps rejects the request outright if the source branch is absent.
+        if ! ref_exists "$existing_refs" "$source_ref"; then
+            skipped=$((skipped + 1))
+            echo -n "s"
+            continue
+        fi
+
+        if [ -z "$target_ref" ] || ! ref_exists "$existing_refs" "$target_ref"; then
+            target_ref="$default_ref"
+        fi
+
+        if [ "$source_ref" = "$target_ref" ]; then
+            skipped=$((skipped + 1))
+            echo -n "s"
+            continue
+        fi
+
+        # jq builds the payload so quotes and newlines in titles stay valid JSON.
+        local pr_payload=$(jq -n \
+            --arg source "$source_ref" \
+            --arg target "$target_ref" \
+            --arg title "$title" \
+            --arg description "$description" \
+            '{sourceRefName: $source, targetRefName: $target, title: $title, description: $description}')
         
         local pr_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullrequests?api-version=7.1"
         local response=$(call_ado_api "POST" "$pr_url" "$pr_payload" "$token" 2>/dev/null)
@@ -901,18 +998,8 @@ EOF
                         if [ ! -z "$comment" ]; then
                             local comment_text=$(echo "$comment" | jq -r '.content // empty' 2>/dev/null)
                             if [ ! -z "$comment_text" ]; then
-                                local thread_payload=$(cat <<EOF
-{
-    "comments": [
-        {
-            "content": "$comment_text",
-            "commentType": 1
-        }
-    ],
-    "status": 1
-}
-EOF
-)
+                                local thread_payload=$(jq -n --arg content "$comment_text" \
+                                    '{comments: [{content: $content, commentType: 1}], status: 1}')
                                 local thread_url="https://dev.azure.com/$org/$project/_apis/git/repositories/$repo_name/pullRequests/$pr_id/threads?api-version=7.1"
                                 call_ado_api "POST" "$thread_url" "$thread_payload" "$token" > /dev/null 2>&1
                             fi
@@ -928,6 +1015,9 @@ EOF
     echo ""
     if [ $count -gt 0 ]; then
         print_success "Created $count pull request(s)"
+    fi
+    if [ $skipped -gt 0 ]; then
+        print_info "Skipped $skipped pull request(s) whose branches are not in this repository"
     fi
 }
 
@@ -985,7 +1075,9 @@ EOF
                 print_success "YAML pipeline created automatically! (ID: $pipeline_id)"
                 
                 # Queue a build run to initialize the pipeline
-                local run_payload='{"resources":{"repositories":{"self":{"refName":"refs/heads/main"}}}}'
+                local run_payload
+                run_payload=$(jq -n --arg ref "refs/heads/$SOURCE_DEFAULT_BRANCH" \
+                    '{resources:{repositories:{self:{refName:$ref}}}}')
                 local run_url="https://dev.azure.com/$org/$project/_apis/pipelines/$pipeline_id/runs?api-version=7.1"
                 call_ado_api "POST" "$run_url" "$run_payload" "$token" > /dev/null 2>&1
             else
@@ -1333,8 +1425,17 @@ get_process_template_id() {
     echo "$template_id"
 }
 
+# Returns 0 if the given template is in the archive list
+is_archived_template() {
+    local name=$1
+    [ -f "$ARCHIVE_FILE" ] || return 1
+    grep -v '^[[:space:]]*#' "$ARCHIVE_FILE" | grep -qx "[[:space:]]*$name[[:space:]]*"
+}
+
 # Function to list available templates
+# Pass "all" to include archived templates in the output.
 list_templates() {
+    local show_all=${1:-}
     print_header "Available Templates"
     echo ""
     
@@ -1344,16 +1445,28 @@ list_templates() {
     fi
     
     local count=0
+    local archived_count=0
     for template_dir in "$TEMPLATES_DIR"/*; do
         if [ -d "$template_dir" ] && [ -f "$template_dir/ProjectTemplate.json" ]; then
             local template_name=$(basename "$template_dir")
+            local archived=false
+
+            if is_archived_template "$template_name"; then
+                archived=true
+                archived_count=$((archived_count + 1))
+                [ "$show_all" = "all" ] || continue
+            fi
+
             local description=""
-            
             if [ -f "$template_dir/ProjectTemplate.json" ]; then
                 description=$(cat "$template_dir/ProjectTemplate.json" | jq -r '.Description // ""')
             fi
-            
-            echo "  📦 $template_name"
+
+            if [ "$archived" = true ]; then
+                echo "  📦 $template_name  (archived - source repo unavailable)"
+            else
+                echo "  📦 $template_name"
+            fi
             if [ -n "$description" ]; then
                 echo "     $description"
             fi
@@ -1366,6 +1479,9 @@ list_templates() {
         print_warning "No templates found in $TEMPLATES_DIR"
     else
         print_info "Found $count templates"
+        if [ "$show_all" != "all" ] && [ $archived_count -gt 0 ]; then
+            print_info "$archived_count archived template(s) hidden (source repos unavailable). Use --list-all to show them."
+        fi
     fi
 }
 
@@ -1383,6 +1499,11 @@ validate_template() {
     if [ ! -f "$template_path/ProjectTemplate.json" ]; then
         print_error "Invalid template: missing ProjectTemplate.json"
         return 1
+    fi
+    
+    if is_archived_template "$template_name"; then
+        print_warning "'$template_name' is archived: its source repository is no longer publicly reachable."
+        print_warning "The project will be created with work items, but source code, branches, pull requests and pipelines will be skipped."
     fi
     
     return 0
@@ -1455,7 +1576,7 @@ import_template() {
     fi
     
     # Import source code
-    if [ -d "$template_path/ImportSourceCode" ]; then
+    if [ -d "$template_path/ImportSourceCode" ] || [ -n "$SOURCE_URL_OVERRIDE" ]; then
         import_source_code "$org" "$project_name" "$template_path/ImportSourceCode" "$token"
         echo ""
     fi
@@ -1527,14 +1648,19 @@ Import Azure DevOps templates from local files using Azure CLI authentication.
 Options:
     -h, --help              Show this help message
     -l, --list              List available templates
+        --list-all          List all templates, including archived ones
     -o, --org ORG           Azure DevOps organization name
     -n, --name PROJECT      Project name to create or reuse
     -t, --template TEMPLATE Template folder name to import
     -e, --use-existing      Reuse a compatible, effectively empty project
+        --source-url URL    Override the template's source repository URL
+                            (private github.com repos authenticate via gh CLI,
+                             GITHUB_TOKEN or GH_TOKEN)
     -y, --yes               Auto-confirm prompts
 
 Environment Variables:
     ADO_ORG                 Azure DevOps Organization name
+    GITHUB_TOKEN / GH_TOKEN Token used to clone private GitHub source repos
 
 Prerequisites:
     - Azure CLI installed (https://aka.ms/azure-cli)
@@ -1551,14 +1677,14 @@ Examples:
     $0
 
     # Import with command line arguments
-    $0 -o myorg -n "MyProject" -t "ContosoShuttle2" -y
+    $0 -o myorg -n "MyProject" -t "Gen-PartsUnlimited" -y
 
     # Import into an existing compatible, empty project
     $0 -o myorg -n "MyProject" -t "ContosoShuttle2" --use-existing -y
 
     # Using environment variable
     export ADO_ORG="your-org"
-    $0 -n "MyProject" -t "ContosoShuttle2" -y
+    $0 -n "MyProject" -t "Gen-PartsUnlimited" -y
 
 Note: This script uses Azure CLI for authentication (more secure than PAT).
       Run 'az login' before using this script.
@@ -1585,6 +1711,10 @@ main() {
                 list_templates
                 exit 0
                 ;;
+            --list-all)
+                list_templates all
+                exit 0
+                ;;
             -o|--org)
                 ADO_ORG="$2"
                 shift 2
@@ -1600,6 +1730,10 @@ main() {
             -e|--use-existing)
                 USE_EXISTING=true
                 shift
+                ;;
+            --source-url)
+                SOURCE_URL_OVERRIDE="$2"
+                shift 2
                 ;;
             -y|--yes)
                 AUTO_CONFIRM=true

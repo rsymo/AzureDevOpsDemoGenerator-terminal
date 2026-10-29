@@ -1,0 +1,70 @@
+# Archived templates - hidden from `--list`
+#
+# These templates reference source repositories that are no longer publicly
+# reachable: the hosting Azure DevOps organization/project was deleted, made
+# private, or now sits behind an authentication wall. Importing them creates a
+# project with work items but no source code, branches, pull requests, or
+# pipelines.
+#
+# Verified with `git ls-remote` anonymously (GIT_TERMINAL_PROMPT=0).
+# Last verified: 2025-05.
+#
+# Format: one template folder name per line. Lines starting with # are ignored.
+# Archived templates are still importable if named explicitly with `-t`;
+# they are simply not advertised. Use `--list-all` to see them.
+
+# --- Azure DevOps orgs that no longer resolve anonymously ---
+AC-AzureSentinel
+AC-NIST800171Rev2
+AC-SapOnAzure
+AC-WVDGuidance
+CAF-ADO-Strategy-Plan-Ready-Governance
+CAF-AKS_CAF
+CAF-AzureGovernance
+CAF-CloudAdoptionPlan
+CAF-KnowledgeMining
+CAF-ModernDataAnalytics
+CAF-ModernDataWarehouse
+CAF-ModernIOT
+CAF-RetailRecommender-SolutionAccelerator
+CAF-SQL_Migration
+CAF-SecureResearch
+CAF-ServerMigration
+CAF-UnifiedDataGovernance
+CAF-WindowsVirtualDesktop
+ContosoShuttle
+ContosoShuttle2
+DoJoWhiteBeltGold
+
+# --- vstsdemodata repos that have since been removed ---
+DL-GitHub
+Gen-MyHealthClinic
+Gen-SmartHotel360
+
+# --- MS Learn "Space Game" labs: lab-tenant repos, all now gone ---
+MSL-Create-Build-Pipeline
+MSL-Deploy-Docker-Template
+MSL-Deploy-Kubernetes-Template
+MSL-Host-Build-Agent
+MSL-Implement-Code-Workflow
+MSL-Manage-Build-Dependencies
+MSL-Run-Quality-Tests
+MSL-Scan-Open-Source
+MSL-Scan-for-Vulnerabilities
+MSL-SpaceGame-AzureFunctions
+MSL-SpaceGame-DeliveryPlans
+MSL-SpaceGame-web-DeployDatabase
+MSL-SpaceGame-web-DeploymentPatterns
+MSL-SpaceGame-web-FunctionalTests
+MSL-SpaceGame-web-Multi-stage
+MSL-SpaceGame-web-Non-functionalTests
+MSL-SpaceGame-web-ProvisionDB
+MSL-SpaceGame-web-Release
+
+# --- GitHub repo removed upstream ---
+MSL-Review-azure-infrastructure-changes
+
+# --- No source code defined in the template at all ---
+Gen-ContosoAir
+MSL-SpaceGame-web-Terraform
+TemplateImages
